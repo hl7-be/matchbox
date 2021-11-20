@@ -6,6 +6,8 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
     <title>Questionnaire - Form - FHIR v4.0.1</title>
     <link href="./lforms.min.css" rel="stylesheet"/>
+
+
   </head>
 
   <body onload="document.body.style.opacity='1'">
@@ -61,8 +63,22 @@ function showQR() {
         JSON.stringify(qr),
         function(data, status){
             console.log(data);
-            window.alert(JSON.stringify(data, null, 2))
-    });
+            //window.alert(JSON.stringify(data, null, 2))
+
+           try {
+             var input = eval('(' + JSON.stringify(data) + ')');
+			       $('#json-renderer').json_viewer(input);
+           }
+           catch (error) {
+			        alert("Cannot eval JSON: " + error);
+        	 }
+
+
+
+          });
+
+
+
 
       }
     </script>
@@ -73,7 +89,38 @@ function showQR() {
   <script type="text/javascript" src="./jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
   <script type="text/javascript" src="./jquery-ui.min.js"> </script>
 
+  <script src="./jquery.json-viewer.js"></script>
+  <link href="./jquery.json-viewer.css" type="text/css" rel="stylesheet" />
+  <link href="./jquerysctipttop.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+body {
+margin: 0;
+font-family: sans-serif;
+}
+textarea#json-input {
+width: 100%;
+height: 200px;
+}
+  </style>
 
+  <script>
+$(function() {
+$('#btn-json-viewer').click(function() {
+  try {
+    var input = eval('(' + $('#json-input').val() + ')');
+    $('#json-renderer').json_viewer(input);
+  }
+  catch (error) {
+    alert("Cannot eval JSON: " + error);
+  }
+});
+
+// Display JSON sample on load
+$('#btn-json-viewer').click();
+});
+  </script>
+
+<pre id="json-renderer"></pre>
 
   
   </body>
