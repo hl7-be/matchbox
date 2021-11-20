@@ -1,0 +1,81 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HTML>
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+    <title>Questionnaire - Form - FHIR v4.0.1</title>
+    <link href="./lforms.min.css" rel="stylesheet"/>
+  </head>
+
+  <body onload="document.body.style.opacity='1'">
+
+    <div class="container">  <!-- container -->
+    <h2 id="root">Form: FINDRISC Test Questionnaire - Form</h2>
+    <br/>
+
+    <div id=formContainer></div>
+    <br> </br>
+
+    <button onclick="showQR()">
+    Show QuestionnaireResponse
+    </button>
+    <br> </br>
+    
+    <script src="./lforms.min.js"></script>
+    <script src="./lformsFHIR.min.js"></script>
+    
+ 
+    <script>
+  
+      $.getJSON("questionnaire.json", function(data){
+        exps = data;
+        // Define a FHIR Questionnaire
+        var fhirQ = data;
+
+        // Add the form to the page
+        LForms.Util.addFormToPage(fhirQ, 'formContainer');
+        
+        // Define the function for showing the QuestionnaireResponse
+
+      }).fail(function(){
+            console.log("An error has occurred.");
+      });
+
+    </script>
+    
+
+
+<script>
+function showQR() {
+        var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+//        window.alert(JSON.stringify(qr, null, 2));
+        $.ajaxSetup({
+            headers: {
+                'Content-Type': 'application/fhir+json;fhirVersion=4.0',
+                'Accept': 'application/fhir+json;fhirVersion=4.0'
+            }
+        });
+
+    $.post("http://localhost:8083/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
+        JSON.stringify(qr),
+        function(data, status){
+            console.log(data);
+            window.alert(JSON.stringify(data, null, 2))
+    });
+
+      }
+    </script>
+  
+
+    </div>  <!-- /container -->
+
+  <script type="text/javascript" src="./jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
+  <script type="text/javascript" src="./jquery-ui.min.js"> </script>
+
+
+
+  
+  </body>
+</html>
+
