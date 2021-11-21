@@ -19,4 +19,4 @@ public class ExtraStaticFilesConfigurer implements WebMvcConfigurer {
 			.addResourceHandler("/static/**")
 		.addResourceLocations(appProperties.getStaticLocation());
 	}
-} 
+}
