@@ -69,10 +69,21 @@ public class AppProperties {
   private Boolean lastn_enabled = false;
   private NormalizedQuantitySearchLevel normalized_quantity_search_level = NormalizedQuantitySearchLevel.NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED;
 
+  private String staticLocation = null;
+
   private Boolean only_install_packages = false;
 
   private Boolean use_apache_address_strategy = false;
   private Boolean use_apache_address_strategy_https = false;
+
+
+	public String getStaticLocation() {
+		return staticLocation;
+	}
+
+	public void setStaticLocation(String staticLocation) {
+		this.staticLocation = staticLocation;
+	}
 
   public Boolean getUse_apache_address_strategy() {
     return use_apache_address_strategy;

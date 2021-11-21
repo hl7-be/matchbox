@@ -27,6 +27,7 @@ spring:
   #      hibernate.search.backend.directory.type: local-filesystem
   #      hibernate.search.backend.directory.root: target/lucenefiles
   #      hibernate.search.backend.lucene_version: lucene_current
+
   batch:
     job:
       enabled: false
@@ -38,6 +39,9 @@ server:
     context-path: /matchbox
 hapi:
   fhir:
+
+    ### Location of static content
+    staticLocation: file:/work/matchbox/static
     ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
     fhir_version: R4
     defer_indexing_for_codesystems_of_size: 0
