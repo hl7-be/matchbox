@@ -16,11 +16,32 @@
     <h2 id="root">Form: FINDRISC Test Questionnaire - Form</h2>
     <br/>
 
+ 
     <div id=formContainer></div>
     <br> </br>
 
+
+<!-- image start --> 
+<section id="main">
+  <div class="inner">
+    <div class="box alt">
+      <div class="row 50% uniform">
+         <div class="4u">
+           <figure>
+             <img src="findriscmapping.png" alt="" class="thumbnail">
+           </figure>
+         </div>
+
+       </div>
+     </div>
+   </div>
+ </section>
+<!-- image end -->
+
+
+
     <button onclick="showQR()">
-    Show QuestionnaireResponse
+    Transform
     </button>
     <br> </br>
     
@@ -52,6 +73,14 @@
 function showQR() {
         var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
 //        window.alert(JSON.stringify(qr, null, 2));
+          try {
+             var input = eval('(' + JSON.stringify(qr) + ')');
+			       $('#json-rendererQR').json_viewer(input);
+          }
+          catch (error) {
+			        alert("Cannot eval JSON: " + error);
+        	}
+;
         $.ajaxSetup({
             headers: {
                 'Content-Type': 'application/fhir+json;fhirVersion=4.0',
@@ -59,13 +88,13 @@ function showQR() {
             }
         });
 
-    $.post("http://localhost:8083/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
+        $.post("http://localhost:8080/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
         JSON.stringify(qr),
         function(data, status){
             console.log(data);
             //window.alert(JSON.stringify(data, null, 2))
 
-           try {
+            try {
              var input = eval('(' + JSON.stringify(data) + ')');
 			       $('#json-renderer').json_viewer(input);
            }
@@ -82,7 +111,21 @@ function showQR() {
 
       }
     </script>
-  
+
+<table>
+  <td>
+    <div class="column">
+      <pre id="json-rendererQR"></pre>
+    </div>
+  </td>
+  <td>
+    <div class="column">
+      <pre id="json-renderer"></pre>
+    </div>
+  </td>
+</table>
+
+
 
     </div>  <!-- /container -->
 
@@ -93,6 +136,25 @@ function showQR() {
   <link href="./jquery.json-viewer.css" type="text/css" rel="stylesheet" />
   <link href="./jquerysctipttop.css" rel="stylesheet" type="text/css">
   <style type="text/css">
+
+table td, table td * {
+    vertical-align: top;
+}
+
+img { 
+  width:200px;
+  border:1px solid black; /* This is only added for testing purposes*/
+  margin-left:calc(25px)
+}
+
+.thumbnail:hover {
+   width: 90%;
+   height:auto;
+   position:relative;
+   /* push image to the right by 1/2 the screen width and 1/2 the image width */
+   margin-left:calc(50px + 50% - 600px);
+}
+
 body {
 margin: 0;
 font-family: sans-serif;
@@ -100,7 +162,24 @@ font-family: sans-serif;
 textarea#json-input {
 width: 100%;
 height: 200px;
+
+  .column {
+  float: left;
+  width: 50%;
+  }
+
+  pre {
+  float: left;
+  width: 50%;
+  }
+
+  .row:after {
+  content: "";
+  display: table;
+  clear: both;
+  }
 }
+
   </style>
 
   <script>
@@ -119,8 +198,6 @@ $('#btn-json-viewer').click(function() {
 $('#btn-json-viewer').click();
 });
   </script>
-
-<pre id="json-renderer"></pre>
 
   
   </body>
