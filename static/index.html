@@ -4,7 +4,7 @@
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-    <title>Questionnaire - Form - FHIR v4.0.1</title>
+    <title>Questionnaire Form</title>
     <link href="./lforms.min.css" rel="stylesheet"/>
 
 
@@ -13,15 +13,15 @@
   <body onload="document.body.style.opacity='1'">
 
     <div class="container">  <!-- container -->
-    <h2 id="root">Form: FINDRISC Test Questionnaire - Form</h2>
+    <h2 id="root">FINDRISC Test Questionnaire - Form</h2>
     <br/>
 
  
     <div id=formContainer></div>
     <br> </br>
 
-
-<!-- image start --> 
+<!-- image start -->
+<!--
 <section id="main">
   <div class="inner">
     <div class="box alt">
@@ -36,64 +36,155 @@
      </div>
    </div>
  </section>
+-->
 <!-- image end -->
 
 
+<button type="button" class="collapsible">Mapping</button>
+<div class="content">
 
-    <button onclick="showQR()">
-    Transform
-    </button>
-    <br> </br>
+  <table>
+    <td>
+      <div class="column">
+          <pre style="text-align:left;">
+
+map "http://hl7belgium.org/matchbox/fml/extractfindrisc" = "extractfindrisc"
+uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse" alias QuestionnaireResponse as source
+uses "http://hl7.org/fhir/StructureDefinition/Observation" alias Observation as target
+group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Observation) {
+  src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then item(item, scoreresult) "abc";
+  src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then patient(item, scoreresult) "abc";
+}
+
+group item(source src, target tgt: Observation) {
+  src -> tgt.code as code then itemcoding(src, code) "x1";
+  src -> tgt.status = "final" "x2";
+  src -> tgt.value = (src.answer.valueDecimal) "x3";
+}
+
+group patient(source src, target tgt: Observation) {
+  src -> tgt.subject as patref then patientid(src, patref) "x1a"; 
+}
+group patientid(source src, target tgt: Reference) {
+  src -> tgt.identifier as patid then idvalue(src,patid) "xtx";
+}
+group idvalue(source src, target tgt: Identifier) {
+//  src -> tgt.value ="2344" "qwe"; 
+  src -> tgt.value = (src.answer.valueDecimal) "qwe"; 
+}
+
+group itemcoding(source src, target tgt: CodeableConcept) {
+  src -> tgt.coding as y then codingcode(src,y) "xx";
+}
+
+group codingcode(source src, target tgt: Coding) {
+  src -> tgt.code = '763117005' "xy1";
+  src -> tgt.system = 'http://snomed.info/sct' "xy2";
+  src -> tgt.display = 'FINDRISC (Finnish Diabetes Risk Score) score' "xy3";
+} </pre>
+           <figure>
+            <img src="findriscmapping.png" width=500px>
+          </figure>
+      </div>
+      <button onclick="submitMap()">Send map</button>
+      </td>
+  </table>
+  
+
+</div>
+
+
+<button onclick="showQR()">
+  Transform
+</button>
+<br> </br>
     
     <script src="./lforms.min.js"></script>
     <script src="./lformsFHIR.min.js"></script>
     
  
     <script>
-  
       $.getJSON("questionnaire.json", function(data){
         exps = data;
         // Define a FHIR Questionnaire
         var fhirQ = data;
-
         // Add the form to the page
         LForms.Util.addFormToPage(fhirQ, 'formContainer');
-        
         // Define the function for showing the QuestionnaireResponse
-
       }).fail(function(){
             console.log("An error has occurred.");
       });
 
     </script>
     
-
+  <script>
+function submitMap(){
+              var map = 
+`map \x22http://hl7belgium.org/matchbox/fml/extractfindrisc\x22 = \x22extractfindrisc\x22 
+uses \x22http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse\x22 alias QuestionnaireResponse as source 
+uses \x22http://hl7.org/fhir/StructureDefinition/Observation\x22 alias Observation as target 
+group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Observation) { 
+  src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then item(item, scoreresult) \x22abc\x22; 
+  src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then patient(item, scoreresult) \x22abc\x22; 
+} 
+group item(source src, target tgt: Observation) { 
+  src -> tgt.code as code then itemcoding(src, code) \x22x1\x22;
+  src -> tgt.status = \x22final\x22 \x22x2\x22;
+  src -> tgt.value = (src.answer.valueDecimal) \x22x3\x22;
+} 
+group patient(source src, target tgt: Observation) { 
+  src -> tgt.subject as patref then patientid(src, patref) \x22x1a\x22; 
+} 
+group patientid(source src, target tgt: Reference) { 
+  src -> tgt.identifier as patid then idvalue(src,patid) \x22xtx\x22; 
+} 
+group idvalue(source src, target tgt: Identifier) { 
+//  src -> tgt.value =\x222344\x22 \x22qwe\x22;  
+  src -> tgt.value = (src.answer.valueDecimal) \x22qwe\x22;  
+} 
+group itemcoding(source src, target tgt: CodeableConcept) { 
+  src -> tgt.coding as y then codingcode(src,y) \x22xx\x22; 
+} 
+group codingcode(source src, target tgt: Coding) { 
+  src -> tgt.code = '763117005' \x22xy1\x22; 
+  src -> tgt.system = 'http://snomed.info/sct' \x22xy2\x22; 
+  src -> tgt.display = 'FINDRISC (Finnish Diabetes Risk Score) score' \x22xy3\x22; 
+}`;
+              $.ajaxSetup({
+                  headers: {
+                      'Content-Type': 'text/fhir-mapping',
+                      'Accept': 'application/fhir+xml;fhirVersion=4.0'
+                  }
+              });
+              $.post("http://localhost:8080/matchbox/fhir/StructureMap",
+              map,
+              function(data, status){
+                  console.log(data);
+              });
+      
+            }
+      </script>
 
 <script>
-function showQR() {
-        var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
-//        window.alert(JSON.stringify(qr, null, 2));
+  function showQR() {
+          var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
           try {
              var input = eval('(' + JSON.stringify(qr) + ')');
 			       $('#json-rendererQR').json_viewer(input);
           }
           catch (error) {
 			        alert("Cannot eval JSON: " + error);
-        	}
-;
+        	};
         $.ajaxSetup({
             headers: {
                 'Content-Type': 'application/fhir+json;fhirVersion=4.0',
                 'Accept': 'application/fhir+json;fhirVersion=4.0'
             }
         });
-
         $.post("http://localhost:8080/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
         JSON.stringify(qr),
         function(data, status){
             console.log(data);
-            //window.alert(JSON.stringify(data, null, 2))
-
             try {
              var input = eval('(' + JSON.stringify(data) + ')');
 			       $('#json-renderer').json_viewer(input);
@@ -101,16 +192,9 @@ function showQR() {
            catch (error) {
 			        alert("Cannot eval JSON: " + error);
         	 }
-
-
-
-          });
-
-
-
-
+        });
       }
-    </script>
+</script>
 
 <table>
   <td>
@@ -124,8 +208,6 @@ function showQR() {
     </div>
   </td>
 </table>
-
-
 
     </div>  <!-- /container -->
 
@@ -142,7 +224,7 @@ table td, table td * {
 }
 
 img { 
-  width:200px;
+  width:90%;
   border:1px solid black; /* This is only added for testing purposes*/
   margin-left:calc(25px)
 }
@@ -180,6 +262,22 @@ height: 200px;
   }
 }
 
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
   </style>
 
   <script>
@@ -198,7 +296,22 @@ $('#btn-json-viewer').click(function() {
 $('#btn-json-viewer').click();
 });
   </script>
-
+<script>
+  var coll = document.getElementsByClassName("collapsible");
+  var i;
+  
+  for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+  }
+  </script>
   
   </body>
 </html>
