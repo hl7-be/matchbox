@@ -11,12 +11,45 @@
   </head>
 
   <body onload="document.body.style.opacity='1'">
-
+    <script type="text/javascript" src="./jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
+    <script type="text/javascript" src="./jquery-ui.min.js"> </script>
+  
+    <script src="./jquery.json-viewer.js"></script>
+    <link href="./jquery.json-viewer.css" type="text/css" rel="stylesheet" />
+    <link href="./jquerysctipttop.css" rel="stylesheet" type="text/css">
+  
     <div class="container">  <!-- container -->
     <h2 id="root">FINDRISC Test Questionnaire - Form</h2>
     <br/>
 
- 
+
+<div id="div_source1">
+  <select id="ch_user1" >
+  </select>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() 
+  { 
+      $.ajax({
+            type: "GET",
+            url:"/matchbox/fhir/Questionnaire",
+            dataType: "json",
+            success: function (data) {
+                $.each(data.entry,function(i,obj)
+                {
+//                 alert(obj.resource.id+":"+obj.resource.fullURL);
+                 var div_data="<option value="+obj.resource.id+">"+obj.resource.title+"</option>";
+//                alert(div_data);
+                $(div_data).appendTo('#ch_user1'); 
+                });  
+                }
+          });
+      });
+  
+  </script>
+
+
     <div id=formContainer></div>
     <br> </br>
 
@@ -101,8 +134,6 @@ group codingcode(source src, target tgt: Coding) {
     
     <script src="./lforms.min.js"></script>
     <script src="./lformsFHIR.min.js"></script>
-    
- 
     <script>
       $.getJSON("questionnaire.json", function(data){
         exps = data;
@@ -211,12 +242,6 @@ group codingcode(source src, target tgt: Coding) {
 
     </div>  <!-- /container -->
 
-  <script type="text/javascript" src="./jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
-  <script type="text/javascript" src="./jquery-ui.min.js"> </script>
-
-  <script src="./jquery.json-viewer.js"></script>
-  <link href="./jquery.json-viewer.css" type="text/css" rel="stylesheet" />
-  <link href="./jquerysctipttop.css" rel="stylesheet" type="text/css">
   <style type="text/css">
 
 table td, table td * {
@@ -312,7 +337,11 @@ $('#btn-json-viewer').click();
     });
   }
   </script>
-  
+
+
+
+
+
   </body>
 </html>
 
