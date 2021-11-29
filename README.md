@@ -7,7 +7,7 @@ matchbox is a FHIR server based on the [hapifhir/hapi-fhir-jpaserver-starter](ht
 - validation support: [server]/$validate for checking FHIR resources conforming to the loaded implementation guides
 - Ability to serve local static content e.g. a FHIR Questionnaire Renderer or [other SDC-related tools](https://confluence.hl7.org/display/FHIRI/SDC+Implementations)
 
-# TL;DR  
+# Short summary  
 To run as a Docker image with static content hosted from a bind volume:
 ```powershell
 mvn package -DskipTests
