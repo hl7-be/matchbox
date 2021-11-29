@@ -12,7 +12,6 @@ To run as a Docker image with static content hosted from a bind volume:
 ```powershell
 mvn package -DskipTests
 docker build -t matchbox .
-docker run -d --name matchbox -p 8080:8080 matchbox
 docker run -d --name matchbox -p 8080:8080 -e "hapi.fhir.staticLocation: file:/static/" -v $PWD/static:/static matchbox
 ```
 (staticLocation is the folder in the container that contains the static content)
