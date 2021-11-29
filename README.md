@@ -7,7 +7,7 @@ matchbox is a FHIR server based on the [hapifhir/hapi-fhir-jpaserver-starter](ht
 - validation support: [server]/$validate for checking FHIR resources conforming to the loaded implementation guides
 - Ability to serve local static content e.g. a FHIR Questionnaire Renderer or [other SDC-related tools](https://confluence.hl7.org/display/FHIRI/SDC+Implementations)
 
-# Short summary  
+# Quickstart
 To run as a Docker image with static content hosted from a bind volume:
 ```powershell
 mvn package -DskipTests
@@ -21,7 +21,10 @@ docker run -d --name matchbox -p 8080:8080 -e "hapi.fhir.staticLocation: file:/s
 FHIR server will then be accessible at http://localhost:8080/matchbox/fhir/metadata. 
 Static content will be accessible at http://localhost:8080/matchbox/static. A sample static HTML page at http://localhost:8080/matchbox/static/index.html includes a questionnaire, the mapping and the transformation.
 
-TO DO: see the [issue board](https://github.com/hl7-be/matchbox/projects/1)
+Other questionnaires are available as demonstration. There is also a file called BE.http that contains the requests to experiment directly with the API. (Can be used with VSCode with the  [http extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+
+
+For TO DO list, see the [issue board](https://github.com/hl7-be/matchbox/projects/1)
 
 
 
