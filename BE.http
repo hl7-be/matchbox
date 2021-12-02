@@ -15,7 +15,7 @@ DELETE {{host}}/StructureMap?url=http://hl7belgium.org/matchbox/fml/extractfindr
 
 ###
 POST {{host}}/StructureMap HTTP/1.1
-Accept: application/fhir+xml;fhirVersion=4.0
+Accept: application/fhir+json;fhirVersion=4.0
 Content-Type: text/fhir-mapping
 
 map "http://hl7belgium.org/matchbox/fml/extractfindrisc" = "extractfindrisc"
