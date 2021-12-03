@@ -95,7 +95,7 @@
                 "expression": "iif(%allQuestionsAnswered, iif(%ageValue.exists(), %ageValue, 0) + iif(%bmiValue.exists(), %bmiValue, 0) + iif(%waistcircumferenceValue.exists(), %waistcircumferenceValue, 0) + iif(%physicalActivityValue.exists(), %physicalActivityValue, 0) + iif(%fruitsvegsValue.exists(), %fruitsvegsValue, 0) + iif(%BPmedsValue.exists(), %BPmedsValue, 0) + iif(%histHyperglicemiaValue.exists(), %histHyperglicemiaValue, 0) + iif(%familyHistDiabetesValue.exists(), %familyHistDiabetesValue, 0), {})"
             }
         }
-    ],
+    ],      
     "url": "http://localhost:8080/matchbox/fhir/Questionnaire/findrisc-questionnaire",
     "version": "0.1.0",
     "name": "FINDRISCQuestionnaire",
