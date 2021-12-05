@@ -18,18 +18,12 @@ Content-Type: text/fhir-mapping
 
 map "http://ahdis.ch/matchbox/fml/qr2patgender" = "qr2patgender"
 uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse" alias QuestionnaireResponse as source
-uses "http://hl7.org/fhir/StructureDefinition/Observation" alias Observation as target
-group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Observation) {
-  src.item as item -> tgt as observation then item(item, observation);
+uses "http://hl7.org/fhir/StructureDefinition/Patient" alias Patient as target
+group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Patient) {
+  src.item as item -> tgt as patient then item(item, patient);
 }
-group item(source src, target tgt: Observation) {
-  src.item as item where linkId.value in ('patient.sex') -> tgt.code as x then itemtext(item, x);
-  src.item as item where linkId.value in ('patient.sex') -> tgt.status = (item.answer.valueString);
-  src.item as item where linkId.value in ('patient.sex') -> tgt.value = (item.answer.valueString);
-}
-
-group itemtext(source src, target tgt: CodeableConcept) {
-  src -> tgt.text = (src.answer.valueString) "xx";
+group item(source src, target tgt: Patient) {
+  src.item as item where linkId.value in ('patient.sex') -> tgt.gender = (item.answer.valueString);
 }
 
 ###

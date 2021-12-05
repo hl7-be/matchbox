@@ -18,7 +18,7 @@ POST {{host}}/StructureMap HTTP/1.1
 Accept: application/fhir+json;fhirVersion=4.0
 Content-Type: text/fhir-mapping
 
-map "http://hl7belgium.org/matchbox/fml/extractfindrisc" = "extractfindrisc"
+map "http://hl7belgium.org/mapping/StructureMap/extractfindrisc" = "extractfindrisc"
 uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse" alias QuestionnaireResponse as source
 uses "http://hl7.org/fhir/StructureDefinition/Observation" alias Observation as target
 group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Observation) {
@@ -55,7 +55,7 @@ group codingcode(source src, target tgt: Coding) {
 
 
 ###
-GET {{host}}/StructureMap?url=http://hl7belgium.org/matchbox/fml/extractfindrisc HTTP/1.1
+GET {{host}}/StructureMap?url=http://hl7belgium.org/mapping/StructureMap/extractfindrisc HTTP/1.1
 
 ###
 http://localhost:8080/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc
@@ -80,7 +80,7 @@ Content-Type: application/fhir+json;fhirVersion=4.0
       "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extr-smap"
     ]
   },
-  "questionnaire":"http://localhost:8080/matchbox/fhir/Questionnaire/findrisc-questionnaire",
+  "questionnaire":"http://hl7belgium.org/mapping/Questionnaire/findrisc-questionnaire",
   "tag":[{"code":"lformsVersion: 29.1.0"}],
   "status":"completed","authored":"2021-11-18T21:05:22.535Z","item":[{"linkId":"age","text":"Patient Age","answer":[{"valueCoding":{"code":"45-54","display":"45 to 54 years old"}}]},{"linkId":"bmi","text":"Patient BMI",
   "answer":[{"valueCoding":{"code":"25-30","display":"25 to 30 km/m2"}}]},{"linkId":"waistcircumference","text":"Waist circumference","answer":[{"valueCoding":{"code":"94-101","display":"Between 94 and 101"}}]},{"linkId":"physicalActivity","text":"Physical Activity?","answer":[{"valueCoding":{"code":"no","display":"No"}}]},{"linkId":"fruitsvegs","text":"Daily consumption of fruits and vegetables?","answer":[{"valueCoding":{"code":"45-54","display":"less than 5 times a day"}}]},{"linkId":"BPmeds","text":"History of high Blood pressure meds?","answer":[{"valueCoding":{"code":"no","display":"No"}}]},{"linkId":"histHyperglicemia","text":"History of high blood glucose?","answer":[{"valueCoding":{"code":"no","display":"No"}}]},{"linkId":"familyHistDiabetes","text":"Family history of diabetes?","answer":[{"valueCoding":{"code":"no","display":"No family history"}}]},{ "linkId":"findriscScore","text":"Patient FINDRISC total score","answer":[{"valueDecimal":9}]},{"linkId":"resultriskLow","text":"10-year diabetes risk: Low","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 100"}]},{"linkId":"resultriskElevated","text":"10-year diabetes risk: Slightly Elevated","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 25"}]},{"linkId":"resultriskModerate","text":"10-year diabetes risk: Moderate","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 6"}]},{"linkId":"resultriskHight","text":"10-year diabetes risk: High","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 3"}]},{"linkId":"resultriskVeryHigh","text":"10-year diabetes risk: Very High","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 2"}]}]}
@@ -112,7 +112,7 @@ Content-Type: application/fhir+json;fhirVersion=4.0
 
 
 ### 
-DELETE {{host}}/Questionnaire/findrisc-questionnaire
+GET {{host}}/Questionnaire/findrisc-questionnaire
 
 
 
@@ -120,3 +120,21 @@ DELETE {{host}}/Questionnaire/findrisc-questionnaire
 GET {{host}}/Questionnaire?url=http://localhost:8080/matchbox/fhir/Questionnaire/findrisc-questionnaire
 Accept: application/fhir+json;fhirVersion=4.0
 Content-Type: application/fhir+json;fhirVersion=4.0
+
+
+### 
+GET {{host}}/Questionnaire
+
+
+
+
+####
+#####
+
+
+###
+POST {{host}}/QuestionnaireResponse/$extract
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{"resourceType":"QuestionnaireResponse","meta":{"profile":["http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaireresponse|2.7"],"tag":[{"code":"lformsVersion: 29.3.1"}]},"status":"completed","authored":"2021-12-04T08:24:10.199Z","item":[{"linkId":"resultriskLow","text":"10-year diabetes risk: Low","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 100"}]},{"linkId":"resultriskElevated","text":"10-year diabetes risk: Slightly Elevated","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 25"}]},{"linkId":"resultriskModerate","text":"10-year diabetes risk: Moderate","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 6"}]},{"linkId":"resultriskHight","text":"10-year diabetes risk: High","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 3"}]},{"linkId":"resultriskVeryHigh","text":"10-year diabetes risk: Very High","answer":[{"valueString":"The probability of developing type 2 diabetes in 10 years is estimated to be 1 in 2"}]}],"questionnaire":"http://hl7belgium.org/mapping/Questionnaire/findrisc-questionnaire"}
