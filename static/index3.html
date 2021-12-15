@@ -298,7 +298,7 @@
                 }
               });
 
-              $.post("http://localhost:8080/matchbox/fhir/QuestionnaireResponse/$extract",
+              $.post("/matchbox/fhir/QuestionnaireResponse/$extract",
                 JSON.stringify(qr),
                 function(data, status){
                     console.log(data);
@@ -355,7 +355,7 @@ Transform
                 'Accept': 'application/fhir+json;fhirVersion=4.0'
             }
         });
-        $.post("http://localhost:8080/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
+        $.post("/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
         JSON.stringify(qr),
         function(data, status){
             console.log(data);
