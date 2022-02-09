@@ -33,6 +33,7 @@ import ca.uhn.fhir.jpa.dao.data.INpmPackageVersionDao;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.model.sched.ISchedulerService;
 import ca.uhn.fhir.jpa.model.sched.ScheduledJobDefinition;
+import ca.uhn.fhir.jpa.packages.IHapiPackageCacheManager;
 import ca.uhn.fhir.jpa.partition.PartitionManagementProvider;
 import ca.uhn.fhir.jpa.provider.GraphQLProvider;
 import ca.uhn.fhir.jpa.provider.IJpaSystemProvider;
@@ -40,13 +41,16 @@ import ca.uhn.fhir.jpa.provider.JpaCapabilityStatementProvider;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.SubscriptionTriggeringProvider;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
+import ca.uhn.fhir.jpa.provider.ValueSetOperationProvider;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.r4.ImplementationGuideResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.subscription.util.SubscriptionDebugLogInterceptor;
+import ca.uhn.fhir.mdm.provider.MdmProviderLoader;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.narrative.INarrativeGenerator;
 import ca.uhn.fhir.narrative2.NullNarrativeGenerator;
+import ca.uhn.fhir.rest.openapi.OpenApiInterceptor;
 import ca.uhn.fhir.rest.server.ApacheProxyAddressStrategy;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
@@ -66,8 +70,10 @@ import ca.uhn.fhir.validation.IValidatorModule;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
 import ch.ahdis.fhir.hapi.jpa.validation.ImplementationGuideProvider;
 import ch.ahdis.fhir.hapi.jpa.validation.ValidationProvider;
+import ch.ahdis.matchbox.interceptor.ImplementationGuidePackageInterceptor;
 import ch.ahdis.matchbox.interceptor.MappingLanguageInterceptor;
 import ch.ahdis.matchbox.mappinglanguage.ConvertingWorkerContext;
+import ch.ahdis.matchbox.questionnaire.QuestionnaireAssembleProvider;
 import ch.ahdis.matchbox.questionnaire.QuestionnairePopulateProvider;
 import ch.ahdis.matchbox.questionnaire.QuestionnaireResponseExtractProvider;
 import ch.ahdis.matchbox.util.MatchboxPackageInstallerImpl;
@@ -75,64 +81,57 @@ import ch.ahdis.matchbox.util.MatchboxPackageInstallerImpl;
 public class BaseJpaRestfulServer extends RestfulServer {
   private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(BaseJpaRestfulServer.class);
 
+	private static final long serialVersionUID = 1L;
   @Autowired
   DaoRegistry daoRegistry;
-
   @Autowired
   DaoConfig daoConfig;
-
   @Autowired
   ISearchParamRegistry searchParamRegistry;
-
   @Autowired
   IFhirSystemDao fhirSystemDao;
-
   @Autowired
-  ResourceProviderFactory resourceProviders;
-
+  ResourceProviderFactory resourceProviderFactory;
   @Autowired
   IJpaSystemProvider jpaSystemProvider;
-
   @Autowired
   IInterceptorBroadcaster interceptorBroadcaster;
-
   @Autowired
   DatabaseBackedPagingProvider databaseBackedPagingProvider;
-
   @Autowired
   IInterceptorService interceptorService;
-
   @Autowired
   IValidatorModule validatorModule;
-
   @Autowired
   ValidationProvider validationProvider;
 
   @Autowired
   Optional<GraphQLProvider> graphQLProvider;
-
   @Autowired
   BulkDataExportProvider bulkDataExportProvider;
-
   @Autowired
   PartitionManagementProvider partitionManagementProvider;
-
   @Autowired
   BinaryStorageInterceptor binaryStorageInterceptor;
-
   @Autowired
   MatchboxPackageInstallerImpl packageInstallerSvc;
   @Autowired
   AppProperties appProperties;
-
   @Autowired
   ApplicationContext myApplicationContext;
-
   @Autowired(required = false)
   IRepositoryValidationInterceptorFactory factory;
+  // These are set only if the features are enabled
+  @Autowired
+  Optional<CqlProviderLoader> cqlProviderLoader;
+  @Autowired
+  Optional<MdmProviderLoader> mdmProviderProvider;
   
   @Autowired
   QuestionnairePopulateProvider questionnaireProvider;
+  
+  @Autowired
+  QuestionnaireAssembleProvider assembleProvider;
   
   @Autowired
   QuestionnaireResponseExtractProvider questionnaireResponseProvider;
@@ -151,14 +150,19 @@ public class BaseJpaRestfulServer extends RestfulServer {
   
   @Autowired
   private ImplementationGuideResourceProvider implementationGuideResourceProvider;
+  
+  @Autowired
+  private ValueSetOperationProvider valueSetOperationProvider;
 
   
-  // These are set only if the features are enabled
-  private CqlProviderLoader cqlProviderLoader;
 	@Autowired
 	private IValidationSupport myValidationSupport;
 
-  private static final long serialVersionUID = 1L;
+  @Autowired
+  private IHapiPackageCacheManager myPackageCacheManager;
+
+  @Autowired
+  protected FhirContext myFhirContext;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -179,7 +183,14 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     setFhirContext(fhirSystemDao.getContext());
 
-    registerProviders(resourceProviders.createProviders());
+    /*
+     * Order matters - the MDM provider registers itself on the resourceProviderFactory - hence the loading must be done
+     * ahead of provider registration
+     */
+    if(appProperties.getMdm_enabled())
+    	mdmProviderProvider.get().loadProvider();
+
+    registerProviders(resourceProviderFactory.createProviders());
     registerProvider(jpaSystemProvider);
 
     /*
@@ -210,19 +221,19 @@ public class BaseJpaRestfulServer extends RestfulServer {
         setServerConformanceProvider(confProvider);
       } else if (fhirVersion == FhirVersionEnum.R4) {
 
-        JpaCapabilityStatementProvider confProvider = new JpaCapabilityStatementProvider(this, fhirSystemDao,
-            daoConfig, searchParamRegistry, myValidationSupport);
-          confProvider.setImplementationDescription("HAPI FHIR R4 Server");
-          setServerConformanceProvider(confProvider);
-        } else if (fhirVersion == FhirVersionEnum.R5) {
+				JpaCapabilityStatementProvider confProvider = new JpaCapabilityStatementProvider(this, fhirSystemDao,
+					daoConfig, searchParamRegistry, myValidationSupport);
+        confProvider.setImplementationDescription("HAPI FHIR R4 Server");
+        setServerConformanceProvider(confProvider);
+      } else if (fhirVersion == FhirVersionEnum.R5) {
 
-          JpaCapabilityStatementProvider confProvider = new JpaCapabilityStatementProvider(this, fhirSystemDao,
-            daoConfig, searchParamRegistry, myValidationSupport);
-          confProvider.setImplementationDescription("HAPI FHIR R5 Server");
-          setServerConformanceProvider(confProvider);
-        } else {
-          throw new IllegalStateException();
-        }
+				JpaCapabilityStatementProvider confProvider = new JpaCapabilityStatementProvider(this, fhirSystemDao,
+					daoConfig, searchParamRegistry, myValidationSupport);
+        confProvider.setImplementationDescription("HAPI FHIR R5 Server");
+        setServerConformanceProvider(confProvider);
+      } else {
+        throw new IllegalStateException();
+      }
     }
 
     /*
@@ -275,6 +286,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
     }
     
     this.registerInterceptor(new MappingLanguageInterceptor());
+    this.registerInterceptor(new ImplementationGuidePackageInterceptor(myPackageCacheManager, myFhirContext));
 
     /*
      * Add some logging for each request
@@ -332,6 +344,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
       config.addAllowedHeader(HttpHeaders.AUTHORIZATION);
       config.addAllowedHeader(HttpHeaders.CACHE_CONTROL);
       config.addAllowedHeader("x-fhir-starter");
+      config.addAllowedHeader("x-cascade");
       config.addAllowedHeader("X-Requested-With");
       config.addAllowedHeader("Prefer");
 
@@ -404,6 +417,10 @@ public class BaseJpaRestfulServer extends RestfulServer {
 
     daoConfig.setDeferIndexingForCodesystemsOfSize(appProperties.getDefer_indexing_for_codesystems_of_size());
 
+	 if (appProperties.getOpenapi_enabled()) {
+		registerInterceptor(new OpenApiInterceptor());
+	}
+
     // Bulk Export
     if (appProperties.getBulk_export_enabled()) {
       registerProvider(bulkDataExportProvider);
@@ -428,6 +445,26 @@ public class BaseJpaRestfulServer extends RestfulServer {
         }
     }
     
+    // if (appProperties.getImplementationGuides() != null) {
+    //   Map<String, AppProperties.ImplementationGuide> guides = appProperties.getImplementationGuides();
+    //   for (Map.Entry<String, AppProperties.ImplementationGuide> guide : guides.entrySet()) {
+		// 	PackageInstallationSpec packageInstallationSpec = new PackageInstallationSpec()
+		// 		.setPackageUrl(guide.getValue().getUrl())
+		// 		.setName(guide.getValue().getName())
+		// 		.setVersion(guide.getValue().getVersion())
+		// 		.setInstallMode(PackageInstallationSpec.InstallModeEnum.STORE_AND_INSTALL);
+		// 	if(appProperties.getInstall_transitive_ig_dependencies()) {
+		// 		packageInstallationSpec.setFetchDependencies(true);
+		// 		packageInstallationSpec.setDependencyExcludes(ImmutableList.of("hl7.fhir.r2.core", "hl7.fhir.r3.core", "hl7.fhir.r4.core", "hl7.fhir.r5.core"));
+		// 	}
+		// 	packageInstallerSvc.install(packageInstallationSpec);
+    //   }
+    // }
+
+    if(factory != null) {
+		 interceptorService.registerInterceptor(factory.buildUsingStoredStructureDefinitions());
+	 }
+
     if (appProperties.getImplementationGuides() != null) {
       ScheduledJobDefinition jobDefinition = new ScheduledJobDefinition();
       jobDefinition.setId(this.getClass().getName());
@@ -439,7 +476,7 @@ public class BaseJpaRestfulServer extends RestfulServer {
       daoConfig.setLastNEnabled(true);
     }
 
-    registerProviders(validationProvider, questionnaireProvider, questionnaireResponseProvider);
+    registerProviders(validationProvider, questionnaireProvider, questionnaireResponseProvider, valueSetOperationProvider);
     // Repository Validating Interceptor
 //	if (Boolean.TRUE.equals(appProperties.getEnable_repository_validating_interceptor())) {
 //		 RepositoryValidationInterceptorFactory repositoryValidationInterceptorFactory = myApplicationContext.getBean(RepositoryValidationInterceptorFactory.class);
@@ -449,8 +486,5 @@ public class BaseJpaRestfulServer extends RestfulServer {
     daoConfig.getModelConfig().setNormalizedQuantitySearchLevel(appProperties.getNormalized_quantity_search_level());
 
 		daoConfig.getModelConfig().setIndexOnContainedResources(appProperties.getEnable_index_contained_resource());
-		
-
-		
   }
 }
