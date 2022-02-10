@@ -1,0 +1,432 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HTML>
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+    <title>Questionnaire Form</title>
+
+    <script type="text/javascript" src="./jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
+    <script type="text/javascript" src="./jquery-ui.min.js"> </script>
+
+    <script src="lib/codemirror.js"></script>
+    <link rel="stylesheet" href="lib/codemirror.css">
+    <script src="mode/javascript/javascript.js"></script>
+    <style>
+      .CodeMirror { height: 400px; border: 1px solid #ddd; }
+      .CodeMirror-scroll { height: 400px; }
+      .CodeMirror pre { padding-left: 7px; line-height: 1.25; }
+      .banner { background: #ffc; padding: 6px; border-bottom: 2px solid silver; text-align: center }
+    </style>
+
+
+    <style type="text/css">
+      table td, table td * {
+          vertical-align: top;
+      }
+  
+      img { 
+        width:90%;
+        border:1px solid black; /* This is only added for testing purposes*/
+        margin-left:calc(25px)
+      }
+  
+      .thumbnail:hover {
+        width: 90%;
+        height:auto;
+        position:relative;
+        /* push image to the right by 1/2 the screen width and 1/2 the image width */
+        margin-left:calc(50px + 50% - 600px);
+      }
+  
+      body {
+      margin: 0;
+      font-family: sans-serif;
+      }
+      textarea#json-input {
+      width: 100%;
+      height: 200px;
+  
+        .column {
+        float: left;
+        width: 50%;
+        }
+  
+        pre {
+        float: left;
+        width: 50%;
+        }
+  
+        .row:after {
+        content: "";
+        display: table;
+        clear: both;
+        }
+      }
+  
+    </style>
+
+  </head>
+
+  <body onload="document.body.style.opacity='1'">
+    
+    <script src="lforms/lforms.min.js"> </script>
+    <script src="lforms/fhir/R4/lformsFHIR.min.js"> </script>
+    <link href="lforms/styles/lforms.min.css" rel="stylesheet"/>
+
+    <script src="json-viewer/jquery.json-viewer.js"> </script>
+    <link href="json-viewer/jquery.json-viewer.css" type="text/css" rel="stylesheet" />
+    <link href="./jquerysctipttop.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+      body {
+        margin: 0 100px;
+        font-family: sans-serif;
+      }
+      p.options label {
+        margin-right: 10px;
+      }
+      p.options input[type=checkbox] {
+        vertical-align: middle;
+      }
+      textarea#json-input {
+        width: 100%;
+        height: 200px;
+      }
+      pre#json-renderer {
+        border: 1px solid #aaa;
+      }
+   </style>
+    
+  
+    <div class="container">  <!-- container -->
+      <legend >Questionnaire</legend>
+
+        <div id="div_source1"> Select a questionnaire from the server:   
+            <select id="questionnaires"  onchange="loadQuest()">
+            </select>
+        </div>
+        <p id="demo" style="font-weight: bold;">No Questionnaire Selected!</p>
+        
+        <div id=formContainer></div>
+        <br/> 
+
+
+        <div>  <!--THIS IS OK -->
+          <fieldset class="mappingdisplay">
+            <legend class="mappingdisplaybutton">Mapping</legend>
+
+            <div class="nohider" >
+              <pre style="text-align:left;" id="mapping"></pre>
+
+                <!-- <figure>
+                    <img src="findriscmapping.png" width=500px>
+                </figure> -->
+<!--
+                  <button onclick="submitMap()">Send map</button>
+-->
+            </div>
+        </div>
+
+
+
+        <script type="text/javascript">
+
+
+
+          $(document).ready(function() 
+          { 
+            var myTextArea = document.getElementById('mapping');
+            var myCodeMirror = CodeMirror.fromTextArea(myTextArea, 
+              {
+                  lineNumbers:true
+              });
+            myCodeMirror.setSize(500, 300);
+
+            $.ajax({
+                    type: "GET",
+                    url:"http://185.11.167.36:8080/matchbox/fhir/Questionnaire",
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data.entry,function(i,obj)
+                        {
+                        var div_data="<option data-url="+obj.resource.url+" value="+obj.resource.id+">"+obj.resource.title+"</option>";
+                        $(div_data).appendTo('#questionnaires'); 
+                        });  
+                    }
+                });
+              });
+
+          function loadQuest() {
+          var x = document.getElementById("questionnaires");
+          qUrl=x.options[x.selectedIndex].getAttribute('data-url');
+          qId=x.options[x.selectedIndex].getAttribute('value');
+          document.getElementById("demo").innerHTML = 'Questionnaire URL: <a  target="_blank" href=' + qUrl+'>'+qUrl+'</a>';
+          ///now GET the questionnaire based on its id, not url
+          $.ajax({
+                  type: "GET",
+                  url:"http://185.11.167.36:8080/matchbox/fhir/Questionnaire?url="+qUrl,
+                  dataType: "json",
+                  success: function (data) {
+                      fhirQ = data.entry[0].resource;
+                      // Add the form to the page
+                      LForms.Util.addFormToPage(fhirQ, 'formContainer');
+                      qrURL = fhirQ.extension.find(ext => ext.url="http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-targetStructureMap").valueCanonical;
+                      $.ajax({
+                        type: "GET",
+                        url:"http://185.11.167.36:8080/matchbox/fhir/StructureMap?url="+qrURL,
+                        dataType: "json",
+                        success: function (data) {
+                            smap = data.entry[0].resource;
+                            // Add the form to the page
+                            document.getElementById("mapping").innerHTML = smap.text.div;
+                            myCodeMirror.setValue(smap.text.div)
+                        }
+                      });
+                },
+            });
+          }
+        </script>
+
+
+        <button onclick="extractQR()">
+            Extract
+        </button>
+        <button onclick="upldateMappingAndExtractQR()">
+          Update and Extract
+      </button>
+
+
+        <br> </br>
+        <legend >Result</legend>
+
+        <script>
+            function extractQR(){
+              var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+              console.log(qr);
+              qr.questionnaire=fhirQ.url;
+              try {
+                var input = eval('(' + JSON.stringify(qr) + ')');
+                $('#json-rendererQR').jsonViewer(input);
+              }
+              catch (error) {
+                alert("Cannot eval JSON: " + error);
+              };
+//                console.log(JSON.stringify(qr));    
+              $.ajaxSetup({
+                headers: {
+                  'Content-Type': 'application/fhir+json;fhirVersion=4.0',
+                  'Accept': 'application/fhir+json;fhirVersion=4.0'
+                }
+              });
+
+              $.post("http://185.11.167.36:8080/matchbox/fhir/QuestionnaireResponse/$extract",
+                JSON.stringify(qr),
+                function(data, status){
+                    console.log(data);
+                    try {
+                        var input = eval('(' + JSON.stringify(data) + ')');
+                            $('#json-renderer').jsonViewer(input);
+                    }
+                    catch (error) {
+                            alert("Cannot eval JSON: " + error);
+                        }
+              });
+            }
+        </script>
+        
+
+        <script>
+            function updateMappingAndExtractQR(){
+              var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+              console.log(qr);
+              qr.questionnaire=fhirQ.url;
+              try {
+                var input = eval('(' + JSON.stringify(qr) + ')');
+                $('#json-rendererQR').jsonViewer(input);
+              }
+              catch (error) {
+                alert("Cannot eval JSON: " + error);
+              };
+
+
+
+              $.ajax({
+                type: "POST",
+                url:"http://185.11.167.36:8080/matchbox/fhir/StructureMap",
+                contentType: 'text/fhir-mapping',
+                headers: {          
+                Accept: "application/fhir+json;fhirVersion=4.0",         
+                "Content-Type": "text/fhir-mapping"   
+                },
+                data: myCodeMirror.getValue(),
+                success: function (data) {
+                    console.log(myCodeMirror.getValue());
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(textStatus);
+                }     
+            });
+
+
+              //                console.log(JSON.stringify(qr));    
+              $.ajaxSetup({
+                headers: {
+                  'Content-Type': 'application/fhir+json;fhirVersion=4.0',
+                  'Accept': 'application/fhir+json;fhirVersion=4.0'
+                }
+              });
+
+              $.post("http://185.11.167.36:8080/matchbox/fhir/QuestionnaireResponse/$extract",
+                JSON.stringify(qr),
+                function(data, status){
+                    console.log(data);
+                    try {
+                        var input = eval('(' + JSON.stringify(data) + ')');
+                            $('#json-renderer').jsonViewer(input);
+                    }
+                    catch (error) {
+                            alert("Cannot eval JSON: " + error);
+                        }
+              });
+            }
+        </script>
+
+
+<script>
+  function showQR() {
+    var qr = LForms.Util.getFormFHIRData('QuestionnaireResponse', 'R4');
+          console.log(qr);
+          qr.questionnaire=fhirQ.url;
+
+          try {
+             var input = eval('(' + JSON.stringify(qr) + ')');
+			       $('#json-rendererQR').jsonViewer(input);
+          }
+          catch (error) {
+			        alert("Cannot eval JSON: " + error);
+        	};
+        $.ajaxSetup({
+            headers: {
+                'Content-Type': 'application/fhir+json;fhirVersion=4.0',
+                'Accept': 'application/fhir+json;fhirVersion=4.0'
+            }
+        });
+        $.post("http://185.11.167.36:8080/matchbox/fhir/StructureMap/$transform?source=http://hl7belgium.org/matchbox/fml/extractfindrisc",
+        JSON.stringify(qr),
+        function(data, status){
+            console.log(data);
+            try {
+             var input = eval('(' + JSON.stringify(data) + ')');
+			       $('#json-renderer').jsonViewer(input);
+           }
+           catch (error) {
+			        alert("Cannot eval JSON: " + error);
+        	 }
+        });
+      }
+</script>
+
+
+
+<table>
+
+  <tr>
+    <th style="min-width: 300px;">QuestionnaireResponse</th>
+    <th style="min-width: 30px;"></th>
+    <th style="min-width: 200px;">Result</th>
+  </tr>
+
+  <tr >
+    <td>
+      <div class="column" style="min-width: 100;">
+        <pre id="json-rendererQR"></pre>
+      </div>
+    </td>
+    <td style="text-align: center; font-size: x-large ; font-weight: bold;" > &#8594;
+    </td>
+    <td>
+      <div class="column">
+        <pre id="json-renderer"></pre>
+      </div>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+
+  <script>
+$(function() {
+$('#btn-json-viewer').click(function() {
+  try {
+    var input = eval('(' + $('#json-input').val() + ')');
+    $('#json-renderer').json_viewer(input);
+  }
+  catch (error) {
+    alert("Cannot eval JSON: " + error);
+  }
+});
+
+// Display JSON sample on load
+$('#btn-json-viewer').click();
+});
+  </script>
+
+
+
+
+
+
+<!--
+        <script>
+            function submitMap(){
+                        var map = 
+            `map \x22http://hl7belgium.org/matchbox/fml/extractfindrisc\x22 = \x22extractfindrisc\x22 
+            uses \x22http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse\x22 alias QuestionnaireResponse as source 
+            uses \x22http://hl7.org/fhir/StructureDefinition/Observation\x22 alias Observation as target 
+            group QuestionnaireResponse(source src : QuestionnaireResponse, target tgt : Observation) { 
+            src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then item(item, scoreresult) \x22abc\x22; 
+            src.item as item where linkId.value in ('findriscScore') -> tgt as scoreresult then patient(item, scoreresult) \x22abc\x22; 
+            } 
+            group item(source src, target tgt: Observation) { 
+            src -> tgt.code as code then itemcoding(src, code) \x22x1\x22;
+            src -> tgt.status = \x22final\x22 \x22x2\x22;
+            src -> tgt.value = (src.answer.valueDecimal) \x22x3\x22;
+            } 
+            group patient(source src, target tgt: Observation) { 
+            src -> tgt.subject as patref then patientid(src, patref) \x22x1a\x22; 
+            } 
+            group patientid(source src, target tgt: Reference) { 
+            src -> tgt.identifier as patid then idvalue(src,patid) \x22xtx\x22; 
+            } 
+            group idvalue(source src, target tgt: Identifier) { 
+            //  src -> tgt.value =\x222344\x22 \x22qwe\x22;  
+            src -> tgt.value = (src.answer.valueDecimal) \x22qwe\x22;  
+            } 
+            group itemcoding(source src, target tgt: CodeableConcept) { 
+            src -> tgt.coding as y then codingcode(src,y) \x22xx\x22; 
+            } 
+            group codingcode(source src, target tgt: Coding) { 
+            src -> tgt.code = '763117005' \x22xy1\x22; 
+            src -> tgt.system = 'http://snomed.info/sct' \x22xy2\x22; 
+            src -> tgt.display = 'FINDRISC (Finnish Diabetes Risk Score) score' \x22xy3\x22; 
+            }`;
+            $.ajaxSetup({
+                            headers: {
+                                'Content-Type': 'text/fhir-mapping',
+                                'Accept': 'application/fhir+xml;fhirVersion=4.0'
+                            }
+                        });
+                        $.post("http://localhost:8080/matchbox/fhir/StructureMap",
+                        map,
+                        function(data, status){
+                            console.log(data);
+                        });
+                    }
+        </script>
+-->    
+  </body>
+</html>
+
