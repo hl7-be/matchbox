@@ -27,6 +27,9 @@ For TO DO list, see the [issue board](https://github.com/hl7-be/matchbox/project
 
 a public test server is hosted at [https://test.ahdis.ch/matchbox/fhir](https://test.ahdis.ch/matchbox/fhir) with a corresponding gui [https://test.ahdis.ch/matchbox/](https://test.ahdis.ch/matchbox/#)
 
+
+a public test server is hosted at [https://test.ahdis.ch/matchbox/fhir](https://test.ahdis.ch/matchbox/fhir) with a corresponding gui [https://test.ahdis.ch/matchbox/](https://test.ahdis.ch/matchbox/#)
+
 ## containers
 
 The docker file will create a docker image with no preloaded implementation guides. A list of implementation guides to load can be passed as config-map.
@@ -78,6 +81,17 @@ docker-compose up
 
 matchbox will be available at [http://localhost:8080/matchbox/fhir](http://localhost:8080/matchbox/fhir)
 matchbox-formfiller will be available at [http://localhost:4300/matchbox-formfiller/#/](http://localhost:4300/matchbox-formfiller/#/)
+
+
+Export the DB data:
+```
+docker-compose exec -T matchbox-test-db pg_dump -Fc -U matchbox matchbox > mydump
+```
+
+Reimport the DB data:
+```
+docker-compose exec -T matchbox-test-db pg_restore -c -U matchbox -d matchbox < mydump
+```
 
 
 Export the DB data:
