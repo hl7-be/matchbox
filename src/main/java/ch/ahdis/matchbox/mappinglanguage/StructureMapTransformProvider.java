@@ -153,7 +153,7 @@ public class StructureMapTransformProvider extends ca.uhn.fhir.jpa.rp.r4.Structu
   public void transfrom(org.hl7.fhir.r5.model.StructureMap map, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse, ConvertingWorkerContext fhirContext) throws IOException {
 
     String contentType = theServletRequest.getContentType();
-    org.hl7.fhir.r5.elementmodel.Element src = Manager.parse(fhirContext, theServletRequest.getInputStream(),
+    org.hl7.fhir.r5.elementmodel.Element src = Manager.parseSingle(fhirContext, theServletRequest.getInputStream(),
         contentType.contains("xml") ? FhirFormat.XML : FhirFormat.JSON);
     Set<String> highestRankedAcceptValues = RestfulServerUtils
         .parseAcceptHeaderAndReturnHighestRankedOptions(theServletRequest);
@@ -172,7 +172,8 @@ public class StructureMapTransformProvider extends ca.uhn.fhir.jpa.rp.r4.Structu
       throw new UnprocessableEntityException("Target Structure can not be resolved from map, is the corresponding implmentation guide provided?");
     }
     
-    StructureMapUtilities utils = new StructureMapUtilities(fhirContext, new TransformSupportServices(fhirContext, new ArrayList<Base>()));
+//    StructureMapUtilities utils = new StructureMapUtilities(fhirContext, new TransformSupportServices(fhirContext, new ArrayList<Base>()));
+    StructureMapUtilities utils = new MatchboxStructureMapUtilities(fhirContext, new TransformSupportServices(fhirContext, new ArrayList<Base>()));
     utils.transform(null, src, map, r);
     ElementModelSorter.sort(r);
     if (r.isResource() && "Bundle".contentEquals(r.getType())) {
@@ -189,7 +190,7 @@ public class StructureMapTransformProvider extends ca.uhn.fhir.jpa.rp.r4.Structu
         if (output != null && responseContentType.equals(Constants.CT_FHIR_JSON_NEW))
           new org.hl7.fhir.r5.elementmodel.JsonParser(fhirContext).compose(r, output, OutputStyle.PRETTY, null);
         else
-          new ch.ahdis.matchbox.mappinglanguage.XmlParser(fhirContext).compose(r, output, OutputStyle.PRETTY, null);
+          new org.hl7.fhir.r5.elementmodel.XmlParser(fhirContext).compose(r, output, OutputStyle.PRETTY, null);
       }
     } catch(org.hl7.fhir.exceptions.FHIRException e) {
       log.error("Transform exception", e);
@@ -210,14 +211,9 @@ public class StructureMapTransformProvider extends ca.uhn.fhir.jpa.rp.r4.Structu
 
     if (targetTypeUrl == null)
       throw new FHIRException("Unable to determine resource URL for target type");
-
-    StructureDefinition structureDefinition = null;
-    for (StructureDefinition sd : fhirContext.getStructures()) {
-      if (sd.getUrl().equalsIgnoreCase(targetTypeUrl)) {
-        structureDefinition = sd;
-        break;
-      }
-    }
+    
+    StructureDefinition structureDefinition = fhirContext.fetchResource(StructureDefinition.class, targetTypeUrl);
+    
     if (structureDefinition == null)
       throw new FHIRException("Unable to determine StructureDefinition for target type");
 

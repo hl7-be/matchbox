@@ -75,7 +75,7 @@ public class QuestionnaireResponseExtractProvider  {
     String contentType = theServletRequest.getContentType();   
 
     // parse QuestionnaireResponse from request body
-    org.hl7.fhir.r5.elementmodel.Element src = Manager.parse(baseWorkerContext, theServletRequest.getInputStream(),
+    org.hl7.fhir.r5.elementmodel.Element src = Manager.parseSingle(baseWorkerContext, theServletRequest.getInputStream(),
         contentType.contains("xml") ? FhirFormat.XML : FhirFormat.JSON);
     extract(baseWorkerContext, src, theServletRequest, theServletResponse); 
   }
@@ -136,7 +136,7 @@ public class QuestionnaireResponseExtractProvider  {
       if (output != null && responseContentType.equals(Constants.CT_FHIR_JSON_NEW))
         new org.hl7.fhir.r5.elementmodel.JsonParser(workerContext).compose(r, output, OutputStyle.PRETTY, null);
       else
-        new ch.ahdis.matchbox.mappinglanguage.XmlParser(workerContext).compose(r, output, OutputStyle.PRETTY, null);
+        new org.hl7.fhir.r5.elementmodel.XmlParser(workerContext).compose(r, output, OutputStyle.PRETTY, null);
     }
     theServletResponse.getOutputStream().close();
 
@@ -155,13 +155,8 @@ public class QuestionnaireResponseExtractProvider  {
     if (targetTypeUrl == null)
       throw new FHIRException("Unable to determine resource URL for target type");
 
-    StructureDefinition structureDefinition = null;
-    for (StructureDefinition sd : workerContext.getStructures()) {
-      if (sd.getUrl().equalsIgnoreCase(targetTypeUrl)) {
-        structureDefinition = sd;
-        break;
-      }
-    }
+    StructureDefinition structureDefinition = workerContext.fetchResource(StructureDefinition.class, targetTypeUrl);
+
     if (structureDefinition == null)
       throw new FHIRException("Unable to determine StructureDefinition for target type");
 
@@ -177,7 +172,7 @@ public class QuestionnaireResponseExtractProvider  {
 		 String inStr = FhirContext.forR4Cached().newJsonParser().encodeResourceToString(inputResource);
 		 
 		 try {
-	       return Manager.parse(workerContext, new ByteArrayInputStream(inStr.getBytes()), FhirFormat.JSON);
+	       return Manager.parseSingle(workerContext, new ByteArrayInputStream(inStr.getBytes()), FhirFormat.JSON);
 		 } catch (IOException e) {
 			 throw new UnprocessableEntityException("Cannot convert resource to element model");
 		 }	 
