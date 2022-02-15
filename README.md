@@ -1,12 +1,13 @@
 # matchbox 
 
-matchbox is a FHIR server based on the [hapifhir/hapi-fhir-jpaserver-starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) 
-- (pre-)load FHIR implementation guides from the package server for conformance resources (StructureMap, Questionnaire, CodeSystem, ValueSet, ConceptMap, NamingSystem, StructureDefinition). The "with-preload" subfolder contains an example with the implementation guides provided for the [public test server](https://test.ahdis.ch/matchbox/fhir).
-- validation support: [server]/$validate for checking FHIR resources conforming to the loaded implementation guides
-- FHIR Mapping Language endpoints for creation of StructureMaps and support for the [StructureMap/$transform](https://www.hl7.org/fhir/operation-structuremap-transform.html) operation
+matchbox is a FHIR server based on the [hapifhir/hapi-fhir-jpaserver-starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) with the following features included:
 - SDC (Structured Data Capture) [extraction](https://build.fhir.org/ig/HL7/sdc/extraction.html#map-extract) support based on the FHIR Mapping language and [Questionnaire/$extract](http://build.fhir.org/ig/HL7/sdc/OperationDefinition-QuestionnaireResponse-extract.html)
+- FHIR Mapping Language endpoints for creation of StructureMaps and support for the [StructureMap/$transform](https://www.hl7.org/fhir/operation-structuremap-transform.html) operation
+- Ability to (pre-)load FHIR implementation guides from the package server for conformance resources (StructureMap, Questionnaire, CodeSystem, ValueSet, ConceptMap, NamingSystem, StructureDefinition). The "with-preload" subfolder contains an example with the implementation guides provided for the [public test server](https://test.ahdis.ch/matchbox/fhir).
+- validation support: [server]/$validate for checking FHIR resources conforming to the loaded implementation guides
+- Ability to serve local static content e.g. a FHIR Questionnaire Renderer or [other SDC-related tools](https://confluence.hl7.org/display/FHIRI/SDC+Implementations)
 
--# Quickstart
+# Quickstart
 To run as a Docker image with static content hosted from a bind volume:
 ```powershell
 mvn package -DskipTests
@@ -25,10 +26,7 @@ Other questionnaires are available as demonstration. There is also a file called
 For TO DO list, see the [issue board](https://github.com/hl7-be/matchbox/projects/1)
 
 
-a public test server is hosted at [https://test.ahdis.ch/matchbox/fhir](https://test.ahdis.ch/matchbox/fhir) with a corresponding gui [https://test.ahdis.ch/matchbox/](https://test.ahdis.ch/matchbox/#)
 
-
-a public test server is hosted at [https://test.ahdis.ch/matchbox/fhir](https://test.ahdis.ch/matchbox/fhir) with a corresponding gui [https://test.ahdis.ch/matchbox/](https://test.ahdis.ch/matchbox/#)
 
 ## containers
 
@@ -105,7 +103,7 @@ docker-compose exec -T matchbox-test-db pg_restore -c -U matchbox -d matchbox < 
 ```
 
 
-## building with Docker
+## Building with Docker
 
 ### Configurable base image:
 
