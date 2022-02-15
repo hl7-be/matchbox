@@ -28,6 +28,9 @@ For TO DO list, see the [issue board](https://github.com/hl7-be/matchbox/project
 
 
 
+
+a public test server is hosted at [https://test.ahdis.ch/matchbox/fhir](https://test.ahdis.ch/matchbox/fhir) with a corresponding gui [https://test.ahdis.ch/matchbox/](https://test.ahdis.ch/matchbox/#)
+
 ## containers
 
 The docker file will create a docker image with no preloaded implementation guides. A list of implementation guides to load can be passed as config-map.
@@ -37,7 +40,7 @@ There is another docker file which will create an image with fixed configuration
 ## Prerequisites
 
 - [This project](https://github.com/ahdis/matchbox) checked out. You may wish to create a GitHub Fork of the project and check that out instead so that you can customize the project and save the results to GitHub. Check out the main branch (master is kept in sync with [hapi-fhir-jpaserver-starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter)
-- Oracle Java (JDK) installed: Minimum JDK8 or newer.
+- Oracle Java (JDK) installed: Minimum JDK11 or newer.
 - Apache Maven build tool (newest version)
 
 ## Running locally
@@ -66,7 +69,32 @@ mvn clean install -DskipTests spring-boot:run -Dspring-boot.run.jvmArguments="-X
 
 Then, browse to the following link to use the server:
 
-[http://localhost:8080/matchbox/](http://localhost:8080/matchbox/)
+[http://localhost:8080/matchbox/fhir](http://localhost:8080/matchbox/fhir)
+
+## Using docker-compose with a persistent postgreSQL database
+
+The database will be stored in the "data" directory. The configuration can be found in the "with-postgres" directory.
+
+```
+mkdir data
+mvn clean package -DskipTests
+docker-compose up
+```
+
+matchbox will be available at [http://localhost:8080/matchbox/fhir](http://localhost:8080/matchbox/fhir)
+matchbox-formfiller will be available at [http://localhost:4300/matchbox-formfiller/#/](http://localhost:4300/matchbox-formfiller/#/)
+
+
+Export the DB data:
+```
+docker-compose exec -T matchbox-test-db pg_dump -Fc -U matchbox matchbox > mydump
+```
+
+Reimport the DB data:
+```
+docker-compose exec -T matchbox-test-db pg_restore -c -U matchbox -d matchbox < mydump
+```
+
 
 ## Building with Docker
 
@@ -81,6 +109,7 @@ Server will then be accessible at http://localhost:8080/matchbox/fhir/metadata.
 
 To dynamically configure run in a kubernetes environment and add a kubernetes config map that provides /config/application.yaml file with implementation guide list like in "with-preload/application.yaml" 
 
+
 ### Image with preloaded implementation guides
 
 After building the base image:
@@ -92,10 +121,10 @@ docker run -d --name matchbox-swissepr -p 8080:8080 matchbox-swissepr
 
 ### making container available
 ```
-docker tag matchbox eu.gcr.io/fhir-ch/matchbox:v141
+docker tag matchbox eu.gcr.io/fhir-ch/matchbox:v180
 
-docker push eu.gcr.io/fhir-ch/matchbox:v141
-docker push eu.gcr.io/fhir-ch/matchbox-swissepr:v140
+docker push eu.gcr.io/fhir-ch/matchbox:v180
+docker push eu.gcr.io/fhir-ch/matchbox-swissepr:v170
 ```
 
 API
