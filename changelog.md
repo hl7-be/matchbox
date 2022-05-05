@@ -1,3 +1,24 @@
+2022/04/xx Release 2.0.0-SNAPHSOT
+- version of ig, validator and matchbox should be provided in the validation report [#40](https://github.com/ahdis/matchbox/issues/40)
+- hapi-fhir 6.0.0-PRE10-SNAPSHOT and org.hl7.fhir.core 5.6.36
+- allow xml in gui for validation [#38](https://github.com/ahdis/matchbox/issues/38)
+  
+2022/03/21 Release 1.9.1
+- custom log banner, thanks [ralych](https://github.com/ralych)
+- Fixed StructureMap transformation [issue core](https://github.com/hapifhir/org.hl7.fhir.core/issues/771) and [issue#37](https://github.com/ahdis/matchbox/issues/37)
+
+2022/03/10 Release 1.9.0
+- Updated to hap-fhir 5.7.0, fhir.core.version (validator) 5.6.27
+- Extended Mobile Access Gateway support for PMP (replacing FHIR documents with selected Patient in Mobile Access Gateway, transforming to CDA and MDH publish)
+- base release with no ig's configured: docker pull eu.gcr.io/fhir-ch/matchbox:v190
+- docker-compose setup for postgres and for postgres and swiss igs
+
+2022/02/21 Release 1.8.2
+- OAuth integration for [Mobile Access Gateway](https://github.com/i4mi/MobileAccessGateway) in webapp
+  
+2022/02/21 Release 1.8.1
+- Parsing of bundles adds additional contained resources [#11|(https://github.com/ahdis/matchbox/issues/11)
+  
 2022/02/08 Release 1.8.0
 - Integrate webapp running on matchbox port and root itself [#35](https://github.com/ahdis/matchbox/issues/35)
 - NPM can be downloaded with Accept:application/gzip on Implementation Guide Resource
