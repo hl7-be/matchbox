@@ -1,0 +1,2693 @@
+@host = http://185.11.167.36:8080/matchbox/fhir
+### @host = https://test.ahdis.ch/matchbox/fhir
+
+###
+GET {{host}}/metadata HTTP/1.1
+Accept: application/fhir+xml;fhirVersion=4.0
+Origin: http://localhost
+
+
+### FHIR Tutorial
+
+###
+DELETE {{host}}/StructureMap?url=http://hl7belgium.org/matchbox/fml/extractfindrisc HTTP/1.1
+
+
+###
+PUT {{host}}/MedicationKnowledge/EPI-humalog
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "MedicationKnowledge",
+  "id": "EPI-humalog",
+  "meta": {
+    "profile": [
+      "http://example.org/StructureDefinition/epi-fhir-r4"
+    ]
+  },
+  "drugCharacteristic": [
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "packageleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "whatisinleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "usage",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "previousknowledge",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "howtouse",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "sideeffects",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "storageinstructions",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "contentspack",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://example.org/StructureDefinition/MedicationKnowledgeIdentifier",
+      "valueIdentifier": {
+        "system": "https://www.who-umc.org/phpid",
+        "value": "0x073AF2E5B92AE19E8B67635AFFB3D6CA"
+      }
+    },
+    {
+      "url": "http://example.org/StructureDefinition/MedicationKnowledgeIdentifier",
+      "valueIdentifier": {
+        "system": "http://snomed.info/sct",
+        "value": "13884911000001102"
+      }
+    },
+    {
+      "url": "http://example.org/StructureDefinition/MedicationKnowledgeDomain",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "278412004",
+            "system": "http://snomed.info/sct",
+            "display": "Human"
+          }
+        ]
+      }
+    }
+  ],
+  "ingredient": [
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "ACTIB",
+                "system": "http://terminology.hl7.org/ValueSet/v3-RoleClassIngredientEntity",
+                "display": "active ingredient - basis of strength"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GFX7QIS1II",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Insulin lispro"
+          }
+        ]
+      },
+      "strength": {
+        "numerator": {
+          "value": 100,
+          "code": "units/ml",
+          "system": "http://unitsofmeasure.org"
+        }
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "PDC6A3C0OX",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Glycerin"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "QTT17582CB",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Hydrochloric acid"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "55X04QC32I",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Sodium Hydroxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "059QF0KO0R",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Water for Injection"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "SOI2LOH54Z",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Zinc Oxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GGO4Y809LO",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Metacresol"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "023C2WHX2V",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Tromethamine"
+          }
+        ]
+      }
+    }
+  ],
+  "status": "active",
+  "productType": [
+    {
+      "coding": [
+        {
+          "code": "767102007",
+          "system": "http://snomed.info/sct",
+          "display": "Chemical Medicinal Product"
+        }
+      ]
+    }
+  ],
+  "amount": {
+    "value": 3,
+    "code": "mL",
+    "system": "http://unitsofmeasure.org"
+  },
+  "manufacturer": {
+    "reference": "Organization/Organization-uv-epi"
+  },
+  "synonym": [
+    "Humalog Mix50 Insulin KwikPen, 3ml pre-fill"
+  ],
+  "doseForm": {
+    "coding": [
+      {
+        "code": "385220007",
+        "system": "http://snomed.info/sct",
+        "display": "Suspension for injection"
+      }
+    ]
+  },
+  "intendedRoute": [
+    {
+      "coding": [
+        {
+          "code": "34206005",
+          "system": "http://snomed.info/sct",
+          "display": "Subcutaneous use"
+        }
+      ]
+    }
+  ],
+  "packaging": {
+    "type": {
+      "coding": [
+        {
+          "code": "3318611000001103",
+          "system": "http://snomed.info/sct",
+          "display": "Pre-filled disposable injection"
+        }
+      ]
+    },
+    "quantity": {
+      "value": 5,
+      "code": "units",
+      "system": "http://unitsofmeasure.org"
+    }
+  }
+}
+
+
+
+###
+PUT {{host}}/Organization/Organization-uv-epi
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "Organization",
+  "id": "Organization-uv-epi"
+}
+
+###
+PUT {{host}}/SearchParameter/sp-phpid
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+
+{
+  "resourceType": "SearchParameter",
+  "id": "sp-phpid",
+  "url": "http://example.org/SearchParameter/sp-phpid",
+  "name": "PhPID-SEARCH-PARAMETER",
+  "status": "active",
+  "experimental": true,
+  "date": "2013-10-23",
+  "publisher": "Health Level Seven International",
+  "contact": [
+    {
+      "name": "[string]",
+      "telecom": [
+        {
+          "system": "url",
+          "value": "http://hl7.org/fhir"
+        }
+      ]
+    }
+  ],
+  "description": "Search by phpid",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "code": "BE",
+          "system": "urn:iso:std:iso:3166"
+        }
+      ]
+    }
+  ],
+  "purpose": "Search by PhP identifier",
+  "code": "phpid",
+  "base": [
+    "MedicationKnowledge"
+  ],
+  "type": "token",
+  "expression": "MedicationKnowledge.code",
+  "xpath": "f:MedicationKnowledge/f:code",
+  "xpathUsage": "normal"
+}
+
+
+
+###
+GET {{host}}/MedicationKnowledge HTTP/1.1
+Accept: application/fhir+json;fhirVersion=4.0
+Origin: http://localhost
+
+
+
+###
+GET {{host}}/MedicationKnowledge/EPI-humalog HTTP/1.1
+Accept: application/fhir+json;fhirVersion=4.0
+Origin: http://localhost
+
+###
+GET {{host}}/MedicationKnowledge?code=https://www.who-umc.org/phpid|0x073AF2E5B92AE19E8B67635AFFB3D6CA
+Accept: application/fhir+json;fhirVersion=4.0
+Origin: http://localhost
+
+
+###
+PUT {{host}}/MedicationKnowledge/EPI-humalog
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "MedicationKnowledge",
+  "id": "EPI-humalog",
+  "meta": {
+    "profile": [
+      "http://example.org/StructureDefinition/epi-medicationknowledge-r4"
+    ]
+  },
+  "drugCharacteristic": [
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "packageleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "whatisinleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "usage",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "previousknowledge",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "howtouse",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "sideeffects",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "storageinstructions",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "contentspack",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://example.org/StructureDefinition/MedicationKnowledgeDomain",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "278412004",
+            "system": "http://snomed.info/sct",
+            "display": "Human"
+          }
+        ]
+      }
+    }
+  ],
+  "ingredient": [
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "ACTIB",
+                "system": "http://terminology.hl7.org/ValueSet/v3-RoleClassIngredientEntity",
+                "display": "active ingredient - basis of strength"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GFX7QIS1II",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Insulin lispro"
+          }
+        ]
+      },
+      "strength": {
+        "numerator": {
+          "value": 100,
+          "code": "units/ml",
+          "system": "http://unitsofmeasure.org"
+        }
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "PDC6A3C0OX",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Glycerin"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "QTT17582CB",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Hydrochloric acid"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "55X04QC32I",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Sodium Hydroxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "059QF0KO0R",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Water for Injection"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "SOI2LOH54Z",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Zinc Oxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GGO4Y809LO",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Metacresol"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "023C2WHX2V",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Tromethamine"
+          }
+        ]
+      }
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "https://www.who-umc.org/phpid",
+        "code": "0x073AF2E5B92AE19E8B67635AFFB3D6CA"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "13884911000001102"
+      }
+    ]
+  },
+  "status": "active",
+  "productType": [
+    {
+      "coding": [
+        {
+          "code": "767102007",
+          "system": "http://snomed.info/sct",
+          "display": "Chemical Medicinal Product"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
+          "code": "ePI",
+          "system": "https://fhirbender.github.io/mpd-box/CodeSystem/prod-type-cs"
+        }
+      ]
+    }
+  ],
+  "amount": {
+    "value": 3,
+    "code": "mL",
+    "system": "http://unitsofmeasure.org"
+  },
+  "manufacturer": {
+    "reference": "Organization/Organization-uv-epi"
+  },
+  "synonym": [
+    "Humalog Mix50 Insulin KwikPen, 3ml pre-fill"
+  ],
+  "doseForm": {
+    "coding": [
+      {
+        "code": "385220007",
+        "system": "http://snomed.info/sct",
+        "display": "Suspension for injection"
+      }
+    ]
+  },
+  "intendedRoute": [
+    {
+      "coding": [
+        {
+          "code": "34206005",
+          "system": "http://snomed.info/sct",
+          "display": "Subcutaneous use"
+        }
+      ]
+    }
+  ],
+  "packaging": {
+    "type": {
+      "coding": [
+        {
+          "code": "3318611000001103",
+          "system": "http://snomed.info/sct",
+          "display": "Pre-filled disposable injection"
+        }
+      ]
+    },
+    "quantity": {
+      "value": 5,
+      "code": "units",
+      "system": "http://unitsofmeasure.org"
+    }
+  }
+}
+
+
+###
+
+###
+PUT {{host}}/MedicationKnowledge/EPI-humalog2
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "MedicationKnowledge",
+  "id": "EPI-humalog2",
+  "meta": {
+    "profile": [
+      "http://example.org/StructureDefinition/epi-medicationknowledge-r4"
+    ]
+  },
+  "drugCharacteristic": [
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "packageleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "whatisinleaflet",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "usage",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "previousknowledge",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "howtouse",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "sideeffects",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "storageinstructions",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "contentspack",
+            "system": "http://example.org/CodeSystem/epi-leaflet-cs"
+          }
+        ]
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "http://example.org/StructureDefinition/MedicationKnowledgeDomain",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "code": "278412004",
+            "system": "http://snomed.info/sct",
+            "display": "Human"
+          }
+        ]
+      }
+    }
+  ],
+  "ingredient": [
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "ACTIB",
+                "system": "http://terminology.hl7.org/ValueSet/v3-RoleClassIngredientEntity",
+                "display": "active ingredient - basis of strength"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GFX7QIS1II",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Insulin lispro"
+          }
+        ]
+      },
+      "strength": {
+        "numerator": {
+          "value": 100,
+          "code": "units/ml",
+          "system": "http://unitsofmeasure.org"
+        }
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "PDC6A3C0OX",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Glycerin"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "QTT17582CB",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Hydrochloric acid"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "55X04QC32I",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Sodium Hydroxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "059QF0KO0R",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Water for Injection"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "SOI2LOH54Z",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Zinc Oxide"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "GGO4Y809LO",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Metacresol"
+          }
+        ]
+      }
+    },
+    {
+      "extension": [
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeRole",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "code": "100000072082",
+                "system": "http://hl7.org/fhir/ingredient-role/",
+                "display": "Excipient"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://example.org/StructureDefinition/MedicationKnowledgeIngredientManufacturer",
+          "valueReference": {
+            "reference": "Org1"
+          }
+        }
+      ],
+      "itemCodeableConcept": {
+        "coding": [
+          {
+            "code": "023C2WHX2V",
+            "system": "https://gsrs.ncats.nih.gov/ginas/app/beta",
+            "display": "Tromethamine"
+          }
+        ]
+      }
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "https://www.who-umc.org/phpid",
+        "code": "0x073AF2E5B92AE19E8B67635AFFB3D6CA"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "13884911000001102"
+      }
+    ]
+  },
+  "status": "active",
+  "productType": [
+    {
+      "coding": [
+        {
+          "code": "767102007",
+          "system": "http://snomed.info/sct",
+          "display": "Chemical Medicinal Product"
+        }
+      ]
+    },
+    {
+      "coding": [
+        {
+          "code": "ePI",
+          "system": "https://fhirbender.github.io/mpd-box/CodeSystem/prod-type-cs"
+        }
+      ]
+    }
+  ],
+  "amount": {
+    "value": 3,
+    "code": "mL",
+    "system": "http://unitsofmeasure.org"
+  },
+  "manufacturer": {
+    "reference": "Organization/Organization-uv-epi"
+  },
+  "synonym": [
+    "Humalog Mix50 Insulin KwikPen, 3ml pre-filled"
+  ],
+  "doseForm": {
+    "coding": [
+      {
+        "code": "385220007",
+        "system": "http://snomed.info/sct",
+        "display": "Suspension for injection"
+      }
+    ]
+  },
+  "intendedRoute": [
+    {
+      "coding": [
+        {
+          "code": "34206005",
+          "system": "http://snomed.info/sct",
+          "display": "Subcutaneous use"
+        }
+      ]
+    }
+  ],
+  "packaging": {
+    "type": {
+      "coding": [
+        {
+          "code": "3318611000001103",
+          "system": "http://snomed.info/sct",
+          "display": "Pre-filled disposable injection"
+        }
+      ]
+    },
+    "quantity": {
+      "value": 5,
+      "code": "units",
+      "system": "http://unitsofmeasure.org"
+    }
+  }
+}
+
+
+
+
+###
+
+
+GET http://185.11.167.36:8080/matchbox/fhir/MedicationKnowledge?phpid=0x073AF2E5B92AE19E8B67635AFFB3D6CA
+Accept: application/fhir+json;fhirVersion=4.0
+Origin: http://localhost
+
+
+
+###
+PUT {{host}}/Questionnaire/allergy-intolerance-questionnaire
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "Questionnaire",
+  "id": "allergy-intolerance-questionnaire",
+  "language": "en",
+  "url": "https://www.hl7belgium.org/fhir/Questionnaire/allergy-intolerance-questionnaire",
+  "version": "0.1.0",
+  "name": "AllergyIntoleranceQuestionnaire",
+  "title": "Allergy / Intolerance reporting Questionnaire",
+  "_title": {
+    "extension": [
+      {
+        "extension": [
+          {
+            "url": "lang",
+            "valueCode": "fr-BE"
+          },
+          {
+            "url": "content",
+            "valueString": "."
+          }
+        ],
+        "url": "http://hl7.org/fhir/StructureDefinition/translation"
+      },
+      {
+        "extension": [
+          {
+            "url": "lang",
+            "valueCode": "nl-BE"
+          },
+          {
+            "url": "content",
+            "valueString": "."
+          }
+        ],
+        "url": "http://hl7.org/fhir/StructureDefinition/translation"
+      }
+    ]
+  },
+  "status": "draft",
+  "subjectType": [
+    "Patient"
+  ],
+  "date": "2022-02-23T22:00:09+01:00",
+  "publisher": "RIZIV-INAMI",
+  "contact": [
+    {
+      "telecom": [
+        {
+          "system": "url",
+          "value": "http://somewhere.org"
+        }
+      ]
+    }
+  ],
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "NL"
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "patient",
+      "text": "Patient",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "group",
+      "required": true,
+      "item": [
+        {
+          "linkId": "patient-name",
+          "text": "Patient Name",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "string",
+          "required": false
+        },
+        {
+          "linkId": "patient-id",
+          "text": "Patient ID (SSIN)",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "linkId": "status",
+      "text": "AllergyStatus",
+      "type": "display",
+      "required": false,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "code": "active",
+            "display": "Active",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "inactive",
+            "display": "Inactive",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "resolved",
+            "display": "Resolved",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "unconfirmed",
+            "display": "Unconfirmed",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "confirmed",
+            "display": "Confirmed",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "refuted",
+            "display": "Refuted",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "entered-in-error",
+            "display": "entered-in-error",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "item": [
+        {
+          "linkId": "clinical-status",
+          "text": "Clinical Status",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "string",
+          "required": false
+        },
+        {
+          "linkId": "verification-status",
+          "text": "Verification Status",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button"
+              }
+            ]
+          }
+        }
+      ],
+      "linkId": "allergyintolerance",
+      "text": "Allergy or Intolerance?",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "choice",
+      "required": false,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "code": "allergy",
+            "display": "Allergy",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "intolerance",
+            "display": "Intolerance",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "type",
+      "text": "Type (food, medication, environment, biologic)?",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "choice",
+      "required": false,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "code": "food",
+            "display": "Food allergy",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "medication",
+            "display": "Medication allergy or intolerance",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "environment",
+            "display": "Environmental allergy or intolerance",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "biologic",
+            "display": "Biologic allergy or intolerance",
+            "_display": {
+              "extension": [
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "fr-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                },
+                {
+                  "extension": [
+                    {
+                      "url": "lang",
+                      "valueCode": "nl-BE"
+                    },
+                    {
+                      "url": "content",
+                      "valueString": "."
+                    }
+                  ],
+                  "url": "http://hl7.org/fhir/StructureDefinition/translation"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "code",
+      "text": "Code of the allergen or substance?",
+      "type": "choice",
+      "required": false,
+      "answerValueSet": "https://www.ehealth.fgov.be/standards/fhir/ValueSet/be-allergyintolerancecode"
+    },
+    {
+      "linkId": "recorded",
+      "text": "Recorded",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "group",
+      "required": true
+    },
+    {
+      "linkId": "recorded-date",
+      "text": "Date of Record",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "date",
+      "required": false
+    },
+    {
+      "linkId": "recorder",
+      "text": "Recorder",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "string",
+      "required": false
+    },
+    {
+      "linkId": "asserter",
+      "text": "Asserter",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "string",
+      "required": false
+    },
+    {
+      "linkId": "note",
+      "text": "Note",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "text",
+      "required": true
+    },
+    {
+      "linkId": "reactions",
+      "text": "Reaction",
+      "_text": {
+        "extension": [
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "fr-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          },
+          {
+            "extension": [
+              {
+                "url": "lang",
+                "valueCode": "nl-BE"
+              },
+              {
+                "url": "content",
+                "valueString": "."
+              }
+            ],
+            "url": "http://hl7.org/fhir/StructureDefinition/translation"
+          }
+        ]
+      },
+      "type": "group",
+      "required": true,
+      "item": [
+        {
+          "linkId": "manifestation",
+          "text": "Manifestation",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "choice",
+          "required": false,
+          "answerValueSet": "https://www.ehealth.fgov.be/standards/fhir/ValueSet/be-riskmanifestation"
+        },
+        {
+          "linkId": "exposure-route",
+          "text": "Exposure Route",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "choice",
+          "required": false,
+          "answerValueSet": "https://www.ehealth.fgov.be/standards/fhir/ValueSet/be-exposureroute"
+        },
+        {
+          "linkId": "note",
+          "text": "Note",
+          "_text": {
+            "extension": [
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "fr-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              },
+              {
+                "extension": [
+                  {
+                    "url": "lang",
+                    "valueCode": "nl-BE"
+                  },
+                  {
+                    "url": "content",
+                    "valueString": "."
+                  }
+                ],
+                "url": "http://hl7.org/fhir/StructureDefinition/translation"
+              }
+            ]
+          },
+          "type": "choice",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
+
+
+###
+PUT {{host}}/CodeSystem/prod-type-cs
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "CodeSystem",
+  "status": "active",
+  "content": "complete",
+  "name": "ProductTypeCS",
+  "id": "prod-type-cs",
+  "title": "Product Types code system",
+  "description": "Product Types",
+  "version": "1.0.0",
+  "url": "https://fhirbender.github.io/mpd-box/CodeSystem/prod-type-cs",
+  "concept": [
+    {
+      "code": "IDMP_PhP",
+      "display": "IDMP Pharmaceutical Product"
+    },
+    {
+      "code": "IDMP_MP",
+      "display": "IDMP Medicinal Product"
+    },
+    {
+      "code": "IDMP_PP",
+      "display": "IDMP Packaged Medicinal Product"
+    },
+    {
+      "code": "BE_MP",
+      "display": "Belgian Medicinal Product"
+    },
+    {
+      "code": "BE_VMP",
+      "display": "Belgian Virtual Medicinal Product"
+    },
+    {
+      "code": "ePI",
+      "display": "ePI",
+      "property": [
+        {
+          "code": "template",
+          "valueString": "{\"<>\":\"div\",\"id\":\"${synonym}\",\"html\":[{\"<>\":\"table\",\"class\":\"table table-striped table-sm\",\"html\":[{\"<>\":\"thead\",\"html\":[{\"<>\":\"tr\",\"html\":[{\"<>\":\"th\",\"scope\":\"col\",\"html\":\"${resourceType}\"},{\"<>\":\"th\",\"scope\":\"col\",\"html\":\"\"}]}]},{\"<>\":\"tbody\",\"html\":[{\"<>\":\"tr\",\"html\":[{\"<>\":\"td\",\"style\":\"width: 90px;\",\"scope\":\"row\",\"html\":\"Name\"},{\"<>\":\"td\",\"html\":\"${synonym}\"}]},{\"<>\":\"tr\",\"html\":[{\"<>\":\"td\",\"scope\":\"row\",\"html\":\"ID\"},{\"<>\":\"td\",\"html\":\"${id}\"}]},{\"<>\":\"tr\",\"html\":[{\"<>\":\"td\",\"scope\":\"row\",\"html\":\"Status\"},{\"<>\":\"td\",\"html\":\"${status}\"}]}]}]}]}"
+        }
+      ]
+    }
+  ],
+  "count": 6
+}
+
+
+
+###
+
+
+
+###
+PUT {{host}}/SearchParameter/sp-prod-type
+Accept: application/fhir+json;fhirVersion=4.0
+Content-Type: application/fhir+json;fhirVersion=4.0
+
+{
+  "resourceType": "SearchParameter",
+  "id": "sp-prod-type",
+  "url": "https://fhirbender.github.io/mpd-box/SearchParameter/sp-prod-type",
+  "name": "PPRDUCT-TYPE-SEARCH-PARAMETER",
+  "status": "active",
+  "experimental": true,
+  "date": "2022-05-05",
+  "description": "Search by product type",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "code": "BE",
+          "system": "urn:iso:std:iso:3166"
+        }
+      ]
+    }
+  ],
+  "purpose": "Search by Product type",
+  "code": "prod-type",
+  "base": [
+    "MedicationKnowledge"
+  ],
+  "type": "token",
+  "expression": "MedicationKnowledge.productType",
+  "xpath": "f:MedicationKnowledge/f:productType",
+  "xpathUsage": "normal"
+}
