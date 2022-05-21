@@ -39,7 +39,7 @@ spring:
       enabled: false
 server: 
   servlet:
-    context-path: /matchbox
+    context-path: /
 management:
   endpoint:
     health:
