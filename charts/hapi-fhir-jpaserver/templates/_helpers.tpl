@@ -31,21 +31,6 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-<<<<<<< HEAD
-=======
-Create image tag
-*/}}
-{{- define "hapi-fhir-jpaserver.imageTag" -}}
-{{- $version := default .Chart.AppVersion .Values.image.tag -}}
-{{- if .Values.image.flavor }}
-{{- printf "%s-%s" $version .Values.image.flavor }}
-{{- else }}
-{{- printf "%s" $version }}
-{{- end }}
-{{- end }}
-
-{{/*
->>>>>>> master
 Common labels
 */}}
 {{- define "hapi-fhir-jpaserver.labels" -}}
@@ -75,11 +60,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
-<<<<<<< HEAD
 Get the Postgresql credentials secret.
-=======
-Get the Postgresql credentials secret name.
->>>>>>> master
 */}}
 {{- define "hapi-fhir-jpaserver.postgresql.secretName" -}}
 {{- if and (.Values.postgresql.enabled) (not .Values.postgresql.existingSecret) -}}
@@ -90,30 +71,12 @@ Get the Postgresql credentials secret name.
     {{- if .Values.externalDatabase.existingSecret -}}
         {{- printf "%s" .Values.externalDatabase.existingSecret -}}
     {{- else -}}
-<<<<<<< HEAD
         {{ printf "%s-%s" .Release.Name "externaldb" }}
-=======
-        {{ printf "%s-%s" (include "hapi-fhir-jpaserver.fullname" .) "external-db" }}
->>>>>>> master
     {{- end -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-<<<<<<< HEAD
-=======
-Get the Postgresql credentials secret key.
-*/}}
-{{- define "hapi-fhir-jpaserver.postgresql.secretKey" -}}
-{{- if (.Values.externalDatabase.existingSecret) -}}
-    {{- printf "%s" .Values.externalDatabase.existingSecretKey -}}
-{{- else }}
-    {{- printf "postgresql-password" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
->>>>>>> master
 Add environment variables to configure database values
 */}}
 {{- define "hapi-fhir-jpaserver.database.host" -}}
@@ -124,11 +87,7 @@ Add environment variables to configure database values
 Add environment variables to configure database values
 */}}
 {{- define "hapi-fhir-jpaserver.database.user" -}}
-<<<<<<< HEAD
 {{- ternary .Values.postgresql.postgresqlUsername .Values.externalDatabase.user .Values.postgresql.enabled | quote -}}
-=======
-{{- ternary .Values.postgresql.postgresqlUsername .Values.externalDatabase.user .Values.postgresql.enabled -}}
->>>>>>> master
 {{- end -}}
 
 {{/*
@@ -152,10 +111,5 @@ Create the JDBC URL from the host, port and database name.
 {{- $host := (include "hapi-fhir-jpaserver.database.host" .) -}}
 {{- $port := (include "hapi-fhir-jpaserver.database.port" .) -}}
 {{- $name := (include "hapi-fhir-jpaserver.database.name" .) -}}
-<<<<<<< HEAD
 {{ printf "jdbc:postgresql://%s:%d/%s" $host (int $port) $name }}
-=======
-{{- $appName := .Release.Name -}}
-{{ printf "jdbc:postgresql://%s:%d/%s?ApplicationName=%s" $host (int $port) $name $appName }}
->>>>>>> master
 {{- end -}}

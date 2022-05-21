@@ -34,11 +34,13 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
-import org.hl7.fhir.r4.model.StructureDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.jpa.validation.JpaValidationSupportChain;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -51,7 +53,6 @@ import ca.uhn.fhir.validation.ResultSeverityEnum;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationOptions;
 import ca.uhn.fhir.validation.ValidationResult;
-import ch.ahdis.matchbox.util.VersionUtil;
 
 /**
  * Operation $validate
@@ -60,46 +61,25 @@ public class ValidationProvider {
 
   @Autowired
   protected IInstanceValidatorModule instanceValidator;
-
+  
   @Autowired
-  protected IValidationSupport support;
+  protected JpaValidationSupportChain validationSupportChain;
 
   @Autowired
   protected FhirContext myFhirCtx;
 
-  // @Autowired
-  // protected DefaultProfileValidationSupport defaultProfileValidationSuport;
-  /*
-   * @Autowired
-   * 
-   * @Qualifier("myJpaValidationSupport") protected IValidationSupport
-   * myJpaValidationSupport;
-   */
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ValidationProvider.class);
+  @Autowired
+  protected DefaultProfileValidationSupport defaultProfileValidationSuport;
 
-  @Operation(name = "$canonical", manualRequest = true, idempotent = true, returnParameters = {
-      @OperationParam(name = "return", type = IBase.class, min = 1, max = 1) })
-  public IBaseResource canonical(HttpServletRequest theRequest) {
-    String contentString = getContentString(theRequest, null);
-    EncodingEnum encoding = EncodingEnum.forContentType(theRequest.getContentType());
-    if (encoding == null) {
-      encoding = EncodingEnum.detectEncoding(contentString);
-    }
-    IBaseResource resource = null;
-    try {
-      // we still parse to catch wrongli formatted
-      resource = encoding.newParser(myFhirCtx).parseResource(contentString);
-      Canonicalizer canonicalizer= new Canonicalizer(this.myFhirCtx);
-      return canonicalizer.canonicalize(resource);
-    } catch (DataFormatException e) {
-      return getValidationMessageDataFormatException(e);
-    }
-  }
+	@Autowired
+	@Qualifier("myJpaValidationSupport")
+	protected IValidationSupport myJpaValidationSupport;
+	
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ValidationProvider.class);
 
   @Operation(name = "$validate", manualRequest = true, idempotent = true, returnParameters = {
       @OperationParam(name = "return", type = IBase.class, min = 1, max = 1) })
   public IBaseResource validate(HttpServletRequest theRequest) {
-
     log.info("$validate");
     ArrayList<SingleValidationMessage> addedValidationMessages = new ArrayList<>();
 
@@ -113,17 +93,33 @@ public class ValidationProvider {
       profile = theRequest.getParameter("profile");
     }
 
-    StructureDefinition structDef = null;
-
     if (profile != null) {
-      structDef = (StructureDefinition )support.fetchStructureDefinition(profile);
-      if (structDef == null) {
+      if (myJpaValidationSupport.fetchStructureDefinition(profile) == null
+          && defaultProfileValidationSuport.fetchStructureDefinition(profile) == null) {
         return getValidationMessageProfileNotSupported(profile);
       }
       validationOptions.addProfileIfNotBlank(profile);
     }
 
-    String contentString = getContentString(theRequest, addedValidationMessages);
+    byte[] bytes = null;
+    String contentString = "";
+    try {
+      bytes = IOUtils.toByteArray(theRequest.getInputStream());
+      if (bytes.length > 2 && bytes[0] == -17 && bytes[1] == -69 && bytes[2] == -65) {
+        byte[] dest = new byte[bytes.length - 3];
+        System.arraycopy(bytes, 3, dest, 0, bytes.length - 3);
+        bytes = dest;
+        SingleValidationMessage m = new SingleValidationMessage();
+        m.setSeverity(ResultSeverityEnum.WARNING);
+        m.setMessage(
+            "Resource content has a UTF-8 BOM marking, skipping BOM, see https://en.wikipedia.org/wiki/Byte_order_mark");
+        m.setLocationCol(0);
+        m.setLocationLine(0);
+        addedValidationMessages.add(m);
+      }
+      contentString = new String(bytes);
+    } catch (IOException e) {
+    }
 
     if (contentString.length() == 0) {
       SingleValidationMessage m = new SingleValidationMessage();
@@ -143,7 +139,7 @@ public class ValidationProvider {
     if (encoding == null) {
       encoding = EncodingEnum.detectEncoding(contentString);
     }
-
+    
     FhirValidator validator = myFhirCtx.newValidator();
     validator.registerValidatorModule(instanceValidator);
 
@@ -157,33 +153,32 @@ public class ValidationProvider {
     ValidationResult result = null;
     IBaseResource resource = null;
     try {
-      // we still parse to catch wrongli formatted
+      // we still parse to catch wrongli formatted 
       resource = encoding.newParser(myFhirCtx).parseResource(contentString);
     } catch (DataFormatException e) {
       return getValidationMessageDataFormatException(e);
     }
-
-    if (resource != null && "Parameters".equals(resource.fhirType()) && profile == null) {
+    if (resource!=null && "Parameters".equals(resource.fhirType()) && profile == null) {
 //      IBaseParameters parameters = (IBaseParameters) resource;
 // https://github.com/ahdis/matchbox/issues/11
       Parameters parameters = (Parameters) resource;
       IBaseResource resourceInParam = null;
-      for (ParametersParameterComponent compoment : parameters.getParameter()) {
+      for (ParametersParameterComponent compoment: parameters.getParameter()) {
         if ("resource".equals(compoment.getName())) {
           resourceInParam = compoment.getResource();
           break;
         }
       }
-      if (resourceInParam != null && resourceInParam.fhirType().contentEquals("Bundle")) {
-        Bundle bundle = (Bundle) resourceInParam;
-        for (BundleEntryComponent entry : bundle.getEntry()) {
-          if (entry.getResource() != null && entry.getResource().getId() == null) {
-            if (entry.getFullUrl() != null && entry.getFullUrl().startsWith("urn:uuid:")) {
-              entry.setId(entry.getFullUrl().substring(9));
+      if (resourceInParam!=null && resourceInParam.fhirType().contentEquals("Bundle") ) {
+         Bundle bundle = (Bundle) resourceInParam;
+         for (BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.getResource()!=null && entry.getResource().getId()==null) {
+              if (entry.getFullUrl()!=null && entry.getFullUrl().startsWith("urn:uuid:")) {
+                entry.setId(entry.getFullUrl().substring(9));
+              }
             }
-          }
-
-        }
+           
+         }
       }
       List<String> profiles = ParametersUtil.getNamedParameterValuesAsString(myFhirCtx, parameters, "profile");
       if (profiles != null && profiles.size() == 1) {
@@ -205,79 +200,51 @@ public class ValidationProvider {
 //          log.info(serialized);
 //        }
 //      }
-
       if (resourceInParam != null) {
         validationOptions = new ValidationOptions();
         if (profile != null) {
-          structDef = (StructureDefinition )support.fetchStructureDefinition(profile);
-          if (structDef == null) {
+          if (myJpaValidationSupport.fetchStructureDefinition(profile) == null
+              && defaultProfileValidationSuport.fetchStructureDefinition(profile) == null) {
             return getValidationMessageProfileNotSupported(profile);
           }
           validationOptions.addProfileIfNotBlank(profile);
         }
         result = validator.validateWithResult(resourceInParam, validationOptions);
-        IBaseResource operationOutcome = getOperationOutcome(sha3Hex, addedValidationMessages, sw, structDef, result);
+        IBaseResource operationOutcome = getOperationOutcome(sha3Hex, addedValidationMessages, sw, profile, result);
         IBaseParameters returnParameters = ParametersUtil.newInstance(myFhirCtx);
         ParametersUtil.addParameterToParameters(myFhirCtx, returnParameters, "return", operationOutcome);
         return returnParameters;
       } else {
-        // we have a validation for a Parameter but not a resource inside, fall back to
-        // validate only Parameter
+        // we have a validation for a Parameter but not a resource inside, fall back to validate only Parameter
         result = validator.validateWithResult(contentString, validationOptions);
       }
     } else {
       result = validator.validateWithResult(contentString, validationOptions);
     }
-    return getOperationOutcome(sha3Hex, addedValidationMessages, sw, structDef, result);
-  }
-
-  private String getContentString(HttpServletRequest theRequest,
-      ArrayList<SingleValidationMessage> addedValidationMessages) {
-    byte[] bytes = null;
-    String contentString = "";
-    try {
-      bytes = IOUtils.toByteArray(theRequest.getInputStream());
-      if (bytes.length > 2 && bytes[0] == -17 && bytes[1] == -69 && bytes[2] == -65) {
-        byte[] dest = new byte[bytes.length - 3];
-        System.arraycopy(bytes, 3, dest, 0, bytes.length - 3);
-        bytes = dest;
-        if (addedValidationMessages != null) {
-          SingleValidationMessage m = new SingleValidationMessage();
-          m.setSeverity(ResultSeverityEnum.WARNING);
-          m.setMessage(
-              "Resource content has a UTF-8 BOM marking, skipping BOM, see https://en.wikipedia.org/wiki/Byte_order_mark");
-          m.setLocationCol(0);
-          m.setLocationLine(0);
-          addedValidationMessages.add(m);
-        }
-      }
-      contentString = new String(bytes);
-    } catch (IOException e) {
-    }
-    return contentString;
+    return getOperationOutcome(sha3Hex, addedValidationMessages, sw, profile, result);
   }
 
   private IBaseResource getOperationOutcome(String id, ArrayList<SingleValidationMessage> addedValidationMessages,
-      StopWatch sw, StructureDefinition profile, ValidationResult result) {
+      StopWatch sw, String profile, ValidationResult result) {
     sw.endCurrentTask();
+    
+    log.info("Validation time: "+sw.toString());
 
-    log.info("Validation time: " + sw.toString());
-
-    SingleValidationMessage m = new SingleValidationMessage();
-    m.setSeverity(ResultSeverityEnum.INFORMATION);
-    m.setMessage("Validation "+(profile !=null ? "for profile " + profile.getUrl() + "|" + profile.getVersion()+" " + (profile.getDateElement()!=null ? "("+profile.getDateElement().asStringValue()+") " : "") : "")
-        + (result.getMessages().size() == 0 ? "No Issues detected. " : "") + sw.formatTaskDurations()
-        + " "+VersionUtil.getPoweredBy());
-    m.setLocationCol(0);
-    m.setLocationLine(0);
-    addedValidationMessages.add(m);
-
+    if (profile != null) {
+      SingleValidationMessage m = new SingleValidationMessage();
+      m.setSeverity(ResultSeverityEnum.INFORMATION);
+      m.setMessage("Validation for profile " + profile + " "
+          + (result.getMessages().size() == 0 ? "No Issues detected. " : "") + sw.formatTaskDurations());
+      m.setLocationCol(0);
+      m.setLocationLine(0);
+      addedValidationMessages.add(m);
+    }
     addedValidationMessages.addAll(result.getMessages());
 
     IBaseResource operationOutcome = new ValidationResultWithExtensions(myFhirCtx, addedValidationMessages)
         .toOperationOutcome();
     operationOutcome.setId(id);
-
+    
     log.info(this.myFhirCtx.newXmlParser().encodeResourceToString(operationOutcome));
 
     return operationOutcome;

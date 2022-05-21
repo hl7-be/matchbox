@@ -196,8 +196,13 @@ public class QuestionnairePopulateProvider {
 	    if (targetTypeUrl == null)
 	      throw new FHIRException("Unable to determine resource URL for target type");
 	
-	    StructureDefinition structureDefinition = workerContext.fetchResource(StructureDefinition.class, targetTypeUrl);
-
+	    StructureDefinition structureDefinition = null;
+	    for (StructureDefinition sd : workerContext.getStructures()) {
+	      if (sd.getUrl().equalsIgnoreCase(targetTypeUrl)) {
+	        structureDefinition = sd;
+	        break;
+	      }
+	    }
 	    if (structureDefinition == null)
 	      throw new FHIRException("Unable to determine StructureDefinition for target type");
 	
@@ -213,7 +218,7 @@ public class QuestionnairePopulateProvider {
 		 String inStr = FhirContext.forR4Cached().newJsonParser().encodeResourceToString(inputResource);
 		 
 		 try {
-	       return Manager.parseSingle(workerContext, new ByteArrayInputStream(inStr.getBytes()), FhirFormat.JSON);
+	       return Manager.parse(workerContext, new ByteArrayInputStream(inStr.getBytes()), FhirFormat.JSON);
 		 } catch (IOException e) {
 			 throw new UnprocessableEntityException("Cannot convert resource to element model");
 		 }	 

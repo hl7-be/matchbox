@@ -1,40 +1,33 @@
-# -- number of replicas to deploy
+# Default values for hapi-fhir-jpaserver.
+# This is a YAML-formatted file.
+
+# number of replicas
 replicaCount: 1
 
-image:
-  # -- registry where the HAPI FHIR server image is hosted
-  registry: docker.io
-  # -- the path inside the repository
-  repository: hapiproject/hapi
-  # -- defaults to `Chart.appVersion`
-  tag: ""
-  # -- the flavor or variant of the image to use.
-  # appended to the image tag by `-`.
-  flavor: "distroless"
-  # -- image pullPolicy to use
+image: # +doc-gen:ignore
+  registry: ghcr.io
+  repository: chgl/hapifhir/hapi-fhir-jpaserver-starter
+  tag: v5.3.0-distroless
   pullPolicy: IfNotPresent
 
-# -- image pull secrets to use when pulling the image
+# image pull secrets
 imagePullSecrets: []
-
-# -- override the chart name
 nameOverride: ""
-
-# -- override the chart fullname
 fullnameOverride: ""
 
-# -- annotations applied to the server deployment
+# annotations applied to the server deployment
 deploymentAnnotations: {}
 
-# -- annotations applied to the server pod
+# annotations applied to the server pod
 podAnnotations: {}
 
-# -- pod security context
+# PodSecurityContext applied to the pod
 podSecurityContext:
   {}
   # fsGroup: 2000
 
-securityContext:
+# ContainerSecurityContext applied to the container
+securityContext: # +doc-gen:ignore
   allowPrivilegeEscalation: false
   capabilities:
     drop:
@@ -43,32 +36,31 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 65532
 
-# service to expose the server
 service:
-  # -- service type
+  # type of service to expose the server
   type: ClusterIP
-  # -- port where the server will be exposed at
+  # service port
   port: 8080
 
 ingress:
-  # -- whether to create an Ingress to expose the FHIR server HTTP endpoint
+  # whether to create an Ingress to expose the FHIR server web interface
   enabled: false
-  # -- provide any additional annotations which may be required. Evaluated as a template.
+  # provide any additional annotations which may be required. Evaluated as a template.
   annotations:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: fhir-server.127.0.0.1.nip.io
+    - host: fhir-server.127.0.0.1.xip.io
       pathType: ImplementationSpecific
       paths: ["/"]
-  # -- ingress TLS config
+  # ingress TLS config
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-# -- configure the FHIR server's resource requests and limits
+# resource requests and limits
 resources:
   {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -82,24 +74,30 @@ resources:
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- node selector for the pod
+# node labels for pods assignment
+# see: <https://kubernetes.io/docs/user-guide/node-selection/>
 nodeSelector: {}
 
-# -- pod tolerations
+# tolerations for pods assignment
+# see: <https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/>
 tolerations: []
 
-# -- pod affinity
+# affinity for pods assignment
+# see: <https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity>
 affinity: {}
 
+# see <https://github.com/bitnami/charts/tree/master/bitnami/postgresql> for details
 postgresql:
-  # -- enable an included PostgreSQL DB.
-  # see <https://github.com/bitnami/charts/tree/master/bitnami/postgresql> for details
-  # if set to `false`, the values under `externalDatabase` are used
+  # enable an included PostgreSQL DB.
+  # if set to `false`, the values under `webApi.db` are used
   enabled: true
-  # -- name of the database to create
+  # update the default Postgres version to 13.2
+  image: # +doc-gen:break
+    tag: 13.2.0
+  # name of the database to create
   # see: <https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run>
   postgresqlDatabase: "fhir"
-  # -- Name of existing secret to use for PostgreSQL passwords.
+  # Name of existing secret to use for PostgreSQL passwords.
   # The secret has to contain the keys `postgresql-password`
   # which is the password for `postgresqlUsername` when it is
   # different of `postgres`, `postgresql-postgres-password` which
@@ -107,20 +105,38 @@ postgresql:
   # which will override `replication.password` and `postgresql-ldap-password`
   # which will be sed to authenticate on LDAP. The value is evaluated as a template.
   existingSecret: ""
-  containerSecurityContext:
+  replication:
+    # should be true for production use
+    enabled: false
+    # number of read replicas
+    readReplicas: 2
+    # set synchronous commit mode: on, off, remote_apply, remote_write and local
+    synchronousCommit: "on"
+    # from the number of `readReplicas` defined above, set the number of those that will have synchronous replication
+    numSynchronousReplicas: 1
+  metrics:
+    # should also be true for production use
+    enabled: false
+    serviceMonitor:
+      # create a Prometheus Operator ServiceMonitor resource
+      enabled: false
+      # the labels used for Prometheus autodiscover, e.g. could be `release: prometheus`
+      additionalLabels: {}
+  containerSecurityContext: # +doc-gen:ignore
     allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
 
-readinessProbe:
+# readiness probe
+readinessProbe: # +doc-gen:ignore
   failureThreshold: 5
   initialDelaySeconds: 30
   periodSeconds: 20
   successThreshold: 1
   timeoutSeconds: 20
-
-startupProbe:
+# startup probe
+startupProbe: # +doc-gen:ignore
   failureThreshold: 10
   initialDelaySeconds: 60
   periodSeconds: 30
@@ -141,19 +157,3 @@ externalDatabase:
   database: fhir
   # Database port number
   port: 5432
-
-# -- extra environment variables to set on the server container
-extraEnv:
-  []
-  # - name: SPRING_FLYWAY_BASELINE_ON_MIGRATE
-  #   value: "true"
-
-podDisruptionBudget:
-  # -- Enable PodDisruptionBudget for the server pods.
-  # uses policy/v1/PodDisruptionBudget thus requiring k8s 1.21+
-  enabled: false
-  # -- minimum available instances
-  minAvailable: 1
-  # -- maximum unavailable instances
-  maxUnavailable: ""
->>>>>>> master

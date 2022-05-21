@@ -31,10 +31,13 @@ For TO DO list, see the [issue board](https://github.com/hl7-be/matchbox/project
 ## containers
 
 The docker file will create a docker image with no preloaded implementation guides. A list of implementation guides to load can be passed as config-map.
+There is another docker file which will create an image with fixed configuration and preloaded implementation guides.  That docker image does not need to download the implementation guides afterwards.
+
+
 ## Prerequisites
 
 - [This project](https://github.com/ahdis/matchbox) checked out. You may wish to create a GitHub Fork of the project and check that out instead so that you can customize the project and save the results to GitHub. Check out the main branch (master is kept in sync with [hapi-fhir-jpaserver-starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter)
-- Oracle Java (JDK) installed: Minimum JDK11 or newer.
+- Oracle Java (JDK) installed: Minimum JDK8 or newer.
 - Apache Maven build tool (newest version)
 
 ## Running locally
@@ -47,7 +50,7 @@ With no implementation guide:
 ```bash
 mvn clean install -DskipTests spring-boot:run
 ```
-Load example implementation guides (needs postgres):
+Load example implementation guides:
 ```bash
 mvn clean install -DskipTests spring-boot:run -Dspring-boot.run.arguments=--spring.config.additional-location=file:with-preload/application.yaml
 ```
@@ -63,55 +66,7 @@ mvn clean install -DskipTests spring-boot:run -Dspring-boot.run.jvmArguments="-X
 
 Then, browse to the following link to use the server:
 
-[http://localhost:8080/matchbox/fhir](http://localhost:8080/matchbox/fhir)
-or
-[http://localhost:8080/matchbox/#/](http://localhost:8080/matchbox/#/)
-
-## Using docker-compose with a persistent postgreSQL database
-
-The database will be stored in the "data" directory. The configuration can be found in the "with-postgres" directory or in the "with-preload" directory.
-
-Change to either with-posgres directory or the with-preload directory (contains a list of swiss ig's).
-
-For the first time, you might need to do 
-
-```
-docker-compose up matchbox-db
-```
-that the database gets initialized before matchbox is starting up (needs a fix)
-
-```
-mkdir data
-mvn clean package -DskipTests
-docker build -t matchbox .
-docker-compose up
-```
-
-matchbox will be available at [http://localhost:8080/matchbox/fhir](http://localhost:8080/matchbox/fhir)
-matchbox-gui will be available at [http://localhost:8080/matchbox/#/](http://localhost:8080/matchbox/#/)
-
-
-Export the DB data:
-```
-docker-compose exec -T matchbox-test-db pg_dump -Fc -U matchbox matchbox > mydump
-```
-
-Reimport the DB data:
-```
-docker-compose exec -T matchbox-test-db pg_restore -c -U matchbox -d matchbox < mydump
-```
-
-
-Export the DB data:
-```
-docker-compose exec -T matchbox-test-db pg_dump -Fc -U matchbox matchbox > mydump
-```
-
-Reimport the DB data:
-```
-docker-compose exec -T matchbox-test-db pg_restore -c -U matchbox -d matchbox < mydump
-```
-
+[http://localhost:8080/matchbox/](http://localhost:8080/matchbox/)
 
 ## Building with Docker
 
@@ -126,12 +81,21 @@ Server will then be accessible at http://localhost:8080/matchbox/fhir/metadata.
 
 To dynamically configure run in a kubernetes environment and add a kubernetes config map that provides /config/application.yaml file with implementation guide list like in "with-preload/application.yaml" 
 
+### Image with preloaded implementation guides
+
+After building the base image:
+```bash
+cd with-preload
+docker build -t matchbox-swissepr .
+docker run -d --name matchbox-swissepr -p 8080:8080 matchbox-swissepr
+```
 
 ### making container available
 ```
-docker tag matchbox eu.gcr.io/fhir-ch/matchbox:v191
+docker tag matchbox eu.gcr.io/fhir-ch/matchbox:v141
 
-docker push eu.gcr.io/fhir-ch/matchbox:v191
+docker push eu.gcr.io/fhir-ch/matchbox:v141
+docker push eu.gcr.io/fhir-ch/matchbox-swissepr:v140
 ```
 
 API
@@ -148,5 +112,3 @@ Kubernetes
 ==========
 
 kubectl cp matchbox-test-0:fhir.logdir_IS_UNDEFINED ./fhir.logdir/
-
-kubectl cp matchbox-test-app-d684cf865 ./fhir.logdir/

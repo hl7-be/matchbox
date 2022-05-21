@@ -1,20 +1,22 @@
 package ca.uhn.fhir.jpa.starter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.config.DaoConfig.ClientIdStrategyEnum;
-import ca.uhn.fhir.jpa.model.entity.NormalizedQuantitySearchLevel;
-import ca.uhn.fhir.rest.api.EncodingEnum;
-import com.google.common.collect.ImmutableList;
 import org.hl7.fhir.r4.model.Bundle;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.config.DaoConfig.ClientIdStrategyEnum;
+import ca.uhn.fhir.jpa.model.entity.NormalizedQuantitySearchLevel;
+import ca.uhn.fhir.rest.api.EncodingEnum;
 
 @ConfigurationProperties(prefix = "hapi.fhir")
 @Configuration
@@ -22,17 +24,13 @@ import java.util.Objects;
 public class AppProperties {
 
   private Boolean cql_enabled = false;
-  private Boolean openapi_enabled = false;
   private Boolean mdm_enabled = false;
-  private boolean advanced_lucene_indexing = false;
   private Boolean allow_cascading_deletes = false;
   private Boolean allow_contains_searches = true;
   private Boolean allow_external_references = false;
   private Boolean allow_multiple_delete = false;
   private Boolean allow_override_default_search_params = true;
   private Boolean auto_create_placeholder_reference_targets = false;
-  private Boolean dao_scheduling_enabled = true;
-  private Boolean delete_expunge_enabled = false;
   private Boolean enable_index_missing_fields = false;
   private Boolean enable_index_contained_resource = false;
   private Boolean enable_repository_validating_interceptor = false;
@@ -66,23 +64,28 @@ public class AppProperties {
   private Subscription subscription = new Subscription();
   private Cors cors = null;
   private Partitioning partitioning = null;
-  private Boolean install_transitive_ig_dependencies = true;
   private Map<String, ImplementationGuide> implementationGuides = null;
 
   private Boolean lastn_enabled = false;
-  private boolean store_resource_in_lucene_index_enabled = false;
   private NormalizedQuantitySearchLevel normalized_quantity_search_level = NormalizedQuantitySearchLevel.NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED;
+
+  private String staticLocation = null;
 
   private Boolean only_install_packages = false;
 
   private Boolean use_apache_address_strategy = false;
   private Boolean use_apache_address_strategy_https = false;
 
-  private Integer bundle_batch_pool_size = 20;
-  private Integer bundle_batch_pool_max_size = 100;
-  private List<String> local_base_urls = new ArrayList<>();
 
-	public Boolean getUse_apache_address_strategy() {
+	public String getStaticLocation() {
+		return staticLocation;
+	}
+
+	public void setStaticLocation(String staticLocation) {
+		this.staticLocation = staticLocation;
+	}
+
+  public Boolean getUse_apache_address_strategy() {
     return use_apache_address_strategy;
   }
 
@@ -97,7 +100,6 @@ public class AppProperties {
   public void setUse_apache_address_strategy_https(Boolean use_apache_address_strategy_https) {
     this.use_apache_address_strategy_https = use_apache_address_strategy_https;
   }
-  
   private Integer search_coord_core_pool_size = 20;
   private Integer search_coord_max_pool_size = 100;
   private Integer search_coord_queue_capacity = 200;
@@ -198,11 +200,7 @@ public class AppProperties {
     this.supported_resource_types = supported_resource_types;
   }
 
-	public List<String> getSupported_resource_types(List<String> supported_resource_types) {
-		return this.supported_resource_types;
-	}
-
-	public Logger getLogger() {
+  public Logger getLogger() {
     return logger;
   }
 
@@ -218,15 +216,7 @@ public class AppProperties {
     this.client_id_strategy = client_id_strategy;
   }
 
-	public boolean getAdvanced_lucene_indexing() {
-		return this.advanced_lucene_indexing;
-	}
-
-	public void setAdvanced_lucene_indexing(boolean theAdvanced_lucene_indexing) {
-		advanced_lucene_indexing = theAdvanced_lucene_indexing;
-	}
-
-	public Boolean getAllow_cascading_deletes() {
+  public Boolean getAllow_cascading_deletes() {
     return allow_cascading_deletes;
   }
 
@@ -282,22 +272,6 @@ public class AppProperties {
     this.default_page_size = default_page_size;
   }
 
-  public Boolean getDao_scheduling_enabled() {
-    return dao_scheduling_enabled;
-  }
-
-  public void setDao_scheduling_enabled(Boolean dao_scheduling_enabled) {
-    this.dao_scheduling_enabled = dao_scheduling_enabled;
-  }
-
-  public Boolean getDelete_expunge_enabled() {
-    return delete_expunge_enabled;
-  }
-
-  public void setDelete_expunge_enabled(Boolean delete_expunge_enabled) {
-    this.delete_expunge_enabled = delete_expunge_enabled;
-  }
-
   public Boolean getEnable_index_missing_fields() {
     return enable_index_missing_fields;
   }
@@ -318,11 +292,11 @@ public class AppProperties {
 		return enable_repository_validating_interceptor;
 	}
 
-	public void setEnable_repository_validating_interceptor(Boolean theEnable_repository_validating_interceptor) {
-		enable_repository_validating_interceptor = theEnable_repository_validating_interceptor;
-	}
+  public void setEnable_repository_validating_interceptor(Boolean theEnable_repository_validating_interceptor) {
+    enable_repository_validating_interceptor = theEnable_repository_validating_interceptor;
+  }
 
-	public Boolean getEnforce_referential_integrity_on_delete() {
+  public Boolean getEnforce_referential_integrity_on_delete() {
     return enforce_referential_integrity_on_delete;
   }
 
@@ -478,59 +452,33 @@ public class AppProperties {
     this.only_install_packages = only_install_packages;
   }
 
-	public boolean getStore_resource_in_lucene_index_enabled() {
-		return store_resource_in_lucene_index_enabled;
-	}
-
-	public void setStore_resource_in_lucene_index_enabled(Boolean store_resource_in_lucene_index_enabled) {
-		this.store_resource_in_lucene_index_enabled = store_resource_in_lucene_index_enabled;
-	}
-
-	public NormalizedQuantitySearchLevel getNormalized_quantity_search_level() {
-  	return this.normalized_quantity_search_level;
+  public NormalizedQuantitySearchLevel getNormalized_quantity_search_level() {
+    return this.normalized_quantity_search_level;
   }
 
   public void setNormalized_quantity_search_level(NormalizedQuantitySearchLevel normalized_quantity_search_level) {
     this.normalized_quantity_search_level = normalized_quantity_search_level;
   }
 
-	public boolean getInstall_transitive_ig_dependencies() {
-		return install_transitive_ig_dependencies;
-	}
+  public Integer getSearch_coord_core_pool_size() { return search_coord_core_pool_size; }
 
-	public void setInstall_transitive_ig_dependencies(boolean install_transitive_ig_dependencies) {
-		this.install_transitive_ig_dependencies = install_transitive_ig_dependencies;
-	}
-	
-  public Boolean getOpenapi_enabled() {
-    return openapi_enabled;
+  public void setSearch_coord_core_pool_size(Integer search_coord_core_pool_size) {
+    this.search_coord_core_pool_size = search_coord_core_pool_size;
   }
 
-  public void setOpenapi_enabled(Boolean openapi_enabled) {
-    this.openapi_enabled = openapi_enabled;
+  public Integer getSearch_coord_max_pool_size() { return search_coord_max_pool_size; }
+
+  public void setSearch_coord_max_pool_size(Integer search_coord_max_pool_size) {
+    this.search_coord_max_pool_size = search_coord_max_pool_size;
   }
 
-	public Integer getBundle_batch_pool_size() {
-		return this.bundle_batch_pool_size;
-	}
+  public Integer getSearch_coord_queue_capacity() { return search_coord_queue_capacity; }
 
-	public void setBundle_batch_pool_size(Integer bundle_batch_pool_size) {
-		this.bundle_batch_pool_size = bundle_batch_pool_size;
-	}
+  public void setSearch_coord_queue_capacity(Integer search_coord_queue_capacity) {
+  	 this.search_coord_queue_capacity = search_coord_queue_capacity;
+  }
 
-	public Integer getBundle_batch_pool_max_size() {
-		return bundle_batch_pool_max_size;
-	}
-
-	public void setBundle_batch_pool_max_size(Integer bundle_batch_pool_max_size) {
-		this.bundle_batch_pool_max_size = bundle_batch_pool_max_size;
-	}
-
-	public List<String> getLocal_base_urls() {
-		return local_base_urls;
-	}
-
-	public static class Cors {
+public static class Cors {
     private Boolean allow_Credentials = true;
     private List<String> allowed_origin = ImmutableList.of("*");
 

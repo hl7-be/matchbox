@@ -3,15 +3,11 @@
      "parameter": [
           {
                "name": "name",
-               "valueString": "ch.fhir.ig.ch-alis"
+               "valueString": "hl7.fhir.r4.examples"
           },
           {
                "name": "version",
-               "valueString": "0.2.0"
-          },
-          {
-               "name": "url",
-               "valueString": "https://www.alis-connect.ch/fhir/package.tgz"
+               "valueString": "4.0.1"
           }
      ]
 }

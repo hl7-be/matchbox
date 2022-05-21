@@ -1,4 +1,4 @@
 #!/bin/sh
 
-docker build -t matchbox .
+docker build -t hapi-fhir-jpavalidator-starter .
 
