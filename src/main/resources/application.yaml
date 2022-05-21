@@ -81,8 +81,7 @@ hapi:
 ###    example from registry (packages.fhir.org)
       sdc:
         name: hl7.fhir.uv.sdc
-        version: 2.7.0
-
+        version: 3.0.0
 #      swiss:
 #        name: swiss.mednet.fhir
 #        version: 0.8.0
