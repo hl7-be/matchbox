@@ -18,5 +18,6 @@ docker push docker.io/costateixeira/lantern
 
 # Use
 ```console
-docker run -d --name lantern -v $PWD/apps:/apps -p 8080:8080 costateixeira/lantern
+sudo docker run -d --name lantern --restart=always -v $PWD/apps:/apps -p 8080:8080 costateixeira/lantern
 ```
+
